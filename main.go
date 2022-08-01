@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"net"
 	"os"
-	"user/api/service"
+	"user/api"
 	proto "user/api/v1"
 	"user/global"
 	"user/initialize"
@@ -21,7 +21,7 @@ func main() {
 
 	// 注册服务
 	server := grpc.NewServer()
-	proto.RegisterUserServer(server, &service.UserService{})
+	proto.RegisterUserServer(server, &api.UserService{})
 
 	Host := "0.0.0.0"
 	Port, _ := utils.GetFreePort()
