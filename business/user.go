@@ -4,7 +4,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	proto "user/api/v1"
+	proto "user/api/pb"
 	"user/global"
 	"user/model"
 )
@@ -16,6 +16,8 @@ type UserBusiness struct {
 	Gender   string
 	Nickname string
 	Password string
+	Ids      []int64
+	Keyword  string
 }
 
 // ExistsMobile 验证手机号
@@ -69,6 +71,32 @@ func (b *UserBusiness) GetUserById() (*proto.UserResponse, error) {
 		Gender:   entity.Gender,
 		Level:    nil,
 	}, nil
+}
+
+func (b *UserBusiness) GetUserList() (*proto.UsersResponse, error) {
+	// todo elasticsearch 搜索用户
+	return b.GetUserByIds()
+}
+
+func (b *UserBusiness) GetUserByIds() (*proto.UsersResponse, error) {
+	var entity []model.User
+
+	res := global.DB.Find(&entity, b.Ids)
+
+	response := proto.UsersResponse{}
+	response.Total = res.RowsAffected
+	for _, user := range entity {
+		response.Users = append(response.Users, &proto.UserResponse{
+			Id:       user.ID,
+			Code:     user.Code,
+			Nickname: user.Nickname,
+			Avatar:   user.Avatar,
+			Gender:   user.Gender,
+			Level:    nil,
+		})
+	}
+
+	return &response, nil
 }
 
 func generateUserCode() int64 {

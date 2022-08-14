@@ -7,7 +7,7 @@ import (
 	"net"
 	"os"
 	"user/api"
-	proto "user/api/v1"
+	proto "user/api/pb"
 	"user/global"
 	"user/initialize"
 	"user/utils"

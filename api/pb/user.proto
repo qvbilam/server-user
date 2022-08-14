@@ -1,6 +1,7 @@
 syntax = "proto3";
-package user.v1;
-option go_package="user/api/v1;proto";
+package user.pb;
+option go_package="user/api/pb;proto";
+import "page.proto";
 
 // 创建用户
 message SignInRequest{
@@ -34,7 +35,7 @@ message UserResponse{
     LevelResponse level = 6;
 }
 
-// 获取用户登记响应
+// 获取用户等级响应
 message LevelResponse{
     int64 id = 1;
     string name = 2;
@@ -52,10 +53,30 @@ message CheckPasswordResponse{
     bool success = 1;
 }
 
+message SearchRequest {
+    repeated int64 id = 1;
+    string keyword = 2;
+    string sort = 3;
+    bool is_visible = 4;
+    PageRequest page = 5;
+}
+
+message UsersResponse {
+    repeated UserResponse users = 1;
+    int64 total = 2;
+}
+
+message ListByIdsRequest {
+    repeated int64 ids = 1;
+}
+
+
+
 service User{
-    rpc CreateUser(SignInRequest) returns (UserResponse); // 创建用户
-    rpc UpdateUser(UpdateRequest) returns (UserResponse); // 更新用户
+    rpc Create(SignInRequest) returns (UserResponse); // 创建用户
+    rpc Update(UpdateRequest) returns (UserResponse); // 更新用户
+    rpc Detail(GetUserRequest) returns (UserResponse); // 通过id获取用户
+    rpc List(SearchRequest) returns (UsersResponse); // 用户搜索
+    rpc ListByIds(ListByIdsRequest) returns (UsersResponse); // // 通过ids获取用户
     rpc CheckPassword(CheckPasswordRequest) returns (CheckPasswordResponse); // 验证用户密码
-    rpc GetUser(GetUserRequest) returns (UserResponse); // 通过id获取用户
-    rpc GetUserByCode(GetUserRequest) returns (UserResponse); // 通过code获取用户
 }

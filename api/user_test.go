@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"google.golang.org/grpc"
 	"testing"
-	proto "user/api/v1"
+	proto "user/api/pb"
 )
 
 func TestUserService_CreateUser(t *testing.T) {
@@ -19,12 +19,12 @@ func TestUserService_CreateUser(t *testing.T) {
 
 	client := client()
 	// 创建用户
-	user, err := client.CreateUser(context.Background(), &signInRequest)
+	user, err := client.Create(context.Background(), &signInRequest)
 	if err != nil {
 		t.Errorf("create user failed: %v", err)
 	}
 	// 获取用户
-	getUser, err := client.GetUser(context.Background(), &proto.GetUserRequest{Id: user.Id})
+	getUser, err := client.Detail(context.Background(), &proto.GetUserRequest{Id: user.Id})
 	if err != nil {
 		t.Errorf("get user failed: %v", err)
 	}
