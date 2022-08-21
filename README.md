@@ -1,3 +1,4 @@
+```shell
 # 日志
 go get -u go.uber.org/zap
 
@@ -12,3 +13,4 @@ go get -u google.golang.org/genproto
 
 # 配置
 go get -u github.com/spf13/viper
+```
