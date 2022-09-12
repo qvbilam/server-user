@@ -4,7 +4,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	proto "user/api/pb"
+	proto "user/api/qvbilam/user/v1"
 	"user/global"
 	"user/model"
 )

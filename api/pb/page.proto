@@ -1,8 +1,0 @@
-syntax = "proto3";
-package user.pb;
-option go_package="user/api/pb;proto";
-
-message PageRequest{
-  int64 page = 1;
-  int64 perPage = 2;
-}

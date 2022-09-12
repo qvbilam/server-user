@@ -4,7 +4,7 @@
 // - protoc             v3.19.4
 // source: user.proto
 
-package proto
+package v1
 
 import (
 	context "context"
@@ -26,8 +26,9 @@ type UserClient interface {
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	Detail(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	List(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*UsersResponse, error)
-	ListByIds(ctx context.Context, in *ListByIdsRequest, opts ...grpc.CallOption) (*UsersResponse, error)
 	CheckPassword(ctx context.Context, in *CheckPasswordRequest, opts ...grpc.CallOption) (*CheckPasswordResponse, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*UserResponse, error)
 }
 
 type userClient struct {
@@ -40,7 +41,7 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 
 func (c *userClient) Create(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/user.pb.User/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +50,7 @@ func (c *userClient) Create(ctx context.Context, in *SignInRequest, opts ...grpc
 
 func (c *userClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/user.pb.User/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +59,7 @@ func (c *userClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc
 
 func (c *userClient) Detail(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/user.pb.User/Detail", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/Detail", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,16 +68,7 @@ func (c *userClient) Detail(ctx context.Context, in *GetUserRequest, opts ...grp
 
 func (c *userClient) List(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*UsersResponse, error) {
 	out := new(UsersResponse)
-	err := c.cc.Invoke(ctx, "/user.pb.User/List", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) ListByIds(ctx context.Context, in *ListByIdsRequest, opts ...grpc.CallOption) (*UsersResponse, error) {
-	out := new(UsersResponse)
-	err := c.cc.Invoke(ctx, "/user.pb.User/ListByIds", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +77,25 @@ func (c *userClient) ListByIds(ctx context.Context, in *ListByIdsRequest, opts .
 
 func (c *userClient) CheckPassword(ctx context.Context, in *CheckPasswordRequest, opts ...grpc.CallOption) (*CheckPasswordResponse, error) {
 	out := new(CheckPasswordResponse)
-	err := c.cc.Invoke(ctx, "/user.pb.User/CheckPassword", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/CheckPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+	out := new(UserResponse)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/Auth", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,8 +110,9 @@ type UserServer interface {
 	Update(context.Context, *UpdateRequest) (*UserResponse, error)
 	Detail(context.Context, *GetUserRequest) (*UserResponse, error)
 	List(context.Context, *SearchRequest) (*UsersResponse, error)
-	ListByIds(context.Context, *ListByIdsRequest) (*UsersResponse, error)
 	CheckPassword(context.Context, *CheckPasswordRequest) (*CheckPasswordResponse, error)
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	Auth(context.Context, *AuthRequest) (*UserResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -121,11 +132,14 @@ func (UnimplementedUserServer) Detail(context.Context, *GetUserRequest) (*UserRe
 func (UnimplementedUserServer) List(context.Context, *SearchRequest) (*UsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedUserServer) ListByIds(context.Context, *ListByIdsRequest) (*UsersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListByIds not implemented")
-}
 func (UnimplementedUserServer) CheckPassword(context.Context, *CheckPasswordRequest) (*CheckPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckPassword not implemented")
+}
+func (UnimplementedUserServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedUserServer) Auth(context.Context, *AuthRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -150,7 +164,7 @@ func _User_Create_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.pb.User/Create",
+		FullMethod: "/userPb.v1.User/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).Create(ctx, req.(*SignInRequest))
@@ -168,7 +182,7 @@ func _User_Update_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.pb.User/Update",
+		FullMethod: "/userPb.v1.User/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).Update(ctx, req.(*UpdateRequest))
@@ -186,7 +200,7 @@ func _User_Detail_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.pb.User/Detail",
+		FullMethod: "/userPb.v1.User/Detail",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).Detail(ctx, req.(*GetUserRequest))
@@ -204,28 +218,10 @@ func _User_List_Handler(srv interface{}, ctx context.Context, dec func(interface
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.pb.User/List",
+		FullMethod: "/userPb.v1.User/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).List(ctx, req.(*SearchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _User_ListByIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListByIdsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).ListByIds(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/user.pb.User/ListByIds",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).ListByIds(ctx, req.(*ListByIdsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -240,10 +236,46 @@ func _User_CheckPassword_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.pb.User/CheckPassword",
+		FullMethod: "/userPb.v1.User/CheckPassword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).CheckPassword(ctx, req.(*CheckPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userPb.v1.User/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_Auth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Auth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userPb.v1.User/Auth",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Auth(ctx, req.(*AuthRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -252,7 +284,7 @@ func _User_CheckPassword_Handler(srv interface{}, ctx context.Context, dec func(
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var User_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "user.pb.User",
+	ServiceName: "userPb.v1.User",
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -272,12 +304,16 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_List_Handler,
 		},
 		{
-			MethodName: "ListByIds",
-			Handler:    _User_ListByIds_Handler,
-		},
-		{
 			MethodName: "CheckPassword",
 			Handler:    _User_CheckPassword_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _User_Login_Handler,
+		},
+		{
+			MethodName: "Auth",
+			Handler:    _User_Auth_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

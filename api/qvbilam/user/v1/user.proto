@@ -1,0 +1,98 @@
+syntax = "proto3";
+package userPb.v1;
+option go_package="user/api/qvbilam/user/v1/userPb;v1";
+
+// 创建用户
+message SignInRequest{
+  string nickname = 1;
+  string mobile = 2;
+  string password = 3;
+  string gender = 4;
+}
+
+// 更新用户
+message UpdateRequest{
+  string nickname = 1;
+  string mobile = 2;
+  string password = 3;
+  string gender = 4;
+  string avatar = 5;
+}
+
+// 获取用户请求
+message GetUserRequest{
+  int64 id = 1;
+  int64 code = 2;
+}
+
+// 获取用户响应
+message UserResponse{
+  int64 id = 1;
+  int64 code = 2;
+  string nickname = 3;
+  string avatar = 4;
+  string gender = 5;
+  LevelResponse level = 6;
+}
+
+// 获取用户等级响应
+message LevelResponse{
+  int64 id = 1;
+  string name = 2;
+  string icon = 3;
+}
+
+// 密码验证请求
+message CheckPasswordRequest{
+  string password =1;
+  string enctypedPassword = 2;
+}
+
+// 验证密码响应
+message CheckPasswordResponse{
+  bool success = 1;
+}
+
+message SearchRequest {
+  repeated int64 id = 1;
+  string keyword = 2;
+  string sort = 3;
+  bool is_visible = 4;
+  PageRequest page = 5;
+}
+
+message UsersResponse {
+  repeated UserResponse users = 1;
+  int64 total = 2;
+}
+
+message AuthRequest {
+  string token = 1;
+}
+
+message PageRequest{
+  int64 page = 1;
+  int64 perPage = 2;
+}
+
+message LoginRequest{
+  string mobile = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message LoginResponse{
+  string token = 1;
+  UserResponse user = 2;
+}
+
+
+service User{
+  rpc Create(SignInRequest) returns (UserResponse); // 创建用户
+  rpc Update(UpdateRequest) returns (UserResponse); // 更新用户
+  rpc Detail(GetUserRequest) returns (UserResponse); // 通过id获取用户
+  rpc List(SearchRequest) returns (UsersResponse); // 用户列表
+  rpc CheckPassword(CheckPasswordRequest) returns (CheckPasswordResponse); // 验证用户密码
+  rpc Login(LoginRequest) returns (LoginResponse); // 登陆
+  rpc Auth(AuthRequest) returns (UserResponse); // 授权
+}

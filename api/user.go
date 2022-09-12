@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	proto "user/api/pb"
+	proto "user/api/qvbilam/user/v1"
 	"user/business"
 )
 
@@ -53,15 +53,20 @@ func (s *UserService) Detail(ctx context.Context, request *proto.GetUserRequest)
 
 func (s *UserService) List(ctx context.Context, request *proto.SearchRequest) (*proto.UsersResponse, error) {
 	fmt.Println("获取用户列表")
-	return nil, status.Error(codes.Unimplemented, "服务不可用")
-}
-
-func (s *UserService) ListByIds(ctx context.Context, request *proto.ListByIdsRequest) (*proto.UsersResponse, error) {
-	fmt.Println("批量获取用户:", request.Ids)
-	b := business.UserBusiness{Ids: request.Ids}
+	b := business.UserBusiness{Ids: request.Id}
 	res, err := b.GetUserByIds()
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
+}
+
+func (s *UserService) Login(context.Context, *proto.LoginRequest) (*proto.LoginResponse, error) {
+	fmt.Println("登陆")
+	return nil, status.Error(codes.Unimplemented, "服务不可用")
+}
+
+func (s *UserService) Auth(context.Context, *proto.AuthRequest) (*proto.UserResponse, error) {
+	fmt.Println("验证")
+	return nil, status.Error(codes.Unimplemented, "服务不可用")
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"google.golang.org/grpc"
 	"testing"
-	proto "user/api/pb"
+	proto "user/api/qvbilam/user/v1"
 )
 
 func TestUserService_CreateUser(t *testing.T) {

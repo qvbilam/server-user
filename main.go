@@ -7,7 +7,7 @@ import (
 	"net"
 	"os"
 	"user/api"
-	proto "user/api/pb"
+	proto "user/api/qvbilam/user/v1"
 	"user/global"
 	"user/initialize"
 	"user/utils"
@@ -18,6 +18,7 @@ func main() {
 	initialize.InitLogger()
 	initialize.InitConfig()
 	initialize.InitDatabase()
+	initialize.InitRedis()
 
 	// 注册服务
 	server := grpc.NewServer()
