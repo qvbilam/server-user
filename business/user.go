@@ -4,6 +4,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"log"
 	proto "user/api/qvbilam/user/v1"
 	"user/global"
 	"user/model"
@@ -38,8 +39,18 @@ func (b *UserBusiness) CreateUser() (*proto.UserResponse, error) {
 		return nil, status.Errorf(codes.AlreadyExists, "手机号已注册")
 	}
 
+	ucB := UserCodeBusiness{}
+	userCode, err := ucB.RandomCode(false)
+	if err != nil {
+		log.Printf("生成用户code失败: %v\n", err)
+		return nil, status.Errorf(codes.Internal, "创建用户异常")
+	}
+	if userCode == 0 {
+		return nil, status.Errorf(codes.Internal, "生成用户信息失败")
+	}
+
 	Entity := model.User{
-		Code:     generateUserCode(),
+		Code:     userCode,
 		Mobile:   b.Mobile,
 		Password: b.Password,
 		Nickname: b.Nickname,
@@ -49,6 +60,7 @@ func (b *UserBusiness) CreateUser() (*proto.UserResponse, error) {
 			IsVisible: true,
 		},
 	}
+
 	if res := global.DB.Save(&Entity); res.RowsAffected == 0 {
 		zap.S().Errorf("创建用户失败: %s", res.Error)
 		return nil, status.Errorf(codes.Internal, "创建失败")
@@ -97,8 +109,4 @@ func (b *UserBusiness) GetUserByIds() (*proto.UsersResponse, error) {
 	}
 
 	return &response, nil
-}
-
-func generateUserCode() int64 {
-	return 534511019
 }

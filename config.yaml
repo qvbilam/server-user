@@ -5,6 +5,9 @@ db:
   user: "root"
   password: ""
   database: "qvbilam_user"
+es:
+  host: "127.0.0.1"
+  port: 9200
 redis:
   host: "127.0.0.1"
   port: 6379
