@@ -11,11 +11,11 @@ type UserES struct {
 
 	Mobile   string `json:"mobile"`
 	Nickname string `json:"nickname"`
-	Password string `json:"password"`
-	Avatar   string `json:"avatar"`
-	Gender   string `json:"gender"`
+	//Password string `json:"password"`
+	Avatar string `json:"avatar"`
+	Gender string `json:"gender"`
 
-	IsVisible bool `json:"isVisible"`
+	IsVisible bool `json:"is_visible"`
 
 	//Score float64 `json:"score"`
 }
@@ -28,9 +28,6 @@ func (UserES) GetMapping() string {
 	userMapping := `{
     "mappings":{
         "properties":{
-            "code":{
-                "type":"integer"
-            },
             "level":{
                 "type":"integer"
             },
@@ -49,6 +46,9 @@ func (UserES) GetMapping() string {
             "mobile":{
                 "type":"text",
                 "analyzer":"ik_max_word"
+            },
+            "code":{
+                "type":"text"
             },
             "nickname":{
                 "type":"text",

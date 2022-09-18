@@ -12,7 +12,7 @@ import (
 type RedisServer struct {
 }
 
-const DefaultUserCodeDigit = 0
+const DefaultUserCodeDigit = 3
 
 func (s *RedisServer) Exists(key string) int64 {
 	result, _ := global.Redis.Exists(context.Background(), key).Result()

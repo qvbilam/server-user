@@ -26,7 +26,7 @@ func TestUserCodeBusiness_RandomCodes(t *testing.T) {
 		return
 	}
 	for _, c := range codes {
-		fmt.Printf("get userCode: %s\n", c)
+		fmt.Printf("get userCode: %d\n", c)
 	}
 
 	// 清除缓存

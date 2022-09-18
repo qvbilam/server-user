@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
+	"log"
+	"os"
 	"user/global"
 	"user/model"
 )
@@ -16,9 +18,12 @@ func InitElasticSearch() {
 	url := elastic.SetURL(fmt.Sprintf("http://%s:%d", host, port))
 	sniff := elastic.SetSniff(false) // 不将本地地址转换
 	var err error
-	//logger := log.New(os.Stdout, "elasticsearch", log.LstdFlags) // 设置日志输出位置
-	//global.ES, err = elastic.NewClient(url, sniff, elastic.SetTraceLog(logger))
-	global.ES, err = elastic.NewClient(url, sniff)
+	// 输出日志模式
+	logger := log.New(os.Stdout, "elasticsearch", log.LstdFlags) // 设置日志输出位置
+	global.ES, err = elastic.NewClient(url, sniff, elastic.SetTraceLog(logger))
+
+	// 不输出日志
+	//global.ES, err = elastic.NewClient(url, sniff)
 	if err != nil {
 		zap.S().Panicf("连接es异常: %s", err.Error())
 	}
@@ -30,7 +35,7 @@ func InitElasticSearch() {
 func createVideoIndex() {
 	exists, err := global.ES.IndexExists(model.UserES{}.GetIndexName()).Do(context.Background())
 	if err != nil {
-		zap.S().Panicf("视频索引异常: %s", err)
+		zap.S().Panicf("用户索引异常: %s", err)
 	}
 	if !exists { // 创建索引
 		createIndex, err := global.ES.

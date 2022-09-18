@@ -19,6 +19,7 @@ func main() {
 	initialize.InitConfig()
 	initialize.InitDatabase()
 	initialize.InitRedis()
+	initialize.InitElasticSearch()
 
 	// 注册服务
 	server := grpc.NewServer()

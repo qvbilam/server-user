@@ -17,6 +17,9 @@ go get -u google.golang.org/protobuf
 go get -u google.golang.org/grpc
 go get -u google.golang.org/genproto
 
+# 密码加密
+go get -u github.com/anaskhan96/go-password-encoder
+
 # 配置
 go get -u github.com/spf13/viper
 ```
