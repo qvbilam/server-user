@@ -3,7 +3,10 @@ module user
 go 1.18
 
 require (
+	github.com/anaskhan96/go-password-encoder v0.0.0-20201010210601-c765b799fd72
 	github.com/fsnotify/fsnotify v1.5.4
+	github.com/go-redis/redis/v8 v8.11.5
+	github.com/olivere/elastic/v7 v7.0.32
 	github.com/spf13/viper v1.12.0
 	go.uber.org/zap v1.21.0
 	google.golang.org/grpc v1.48.0
@@ -13,10 +16,8 @@ require (
 )
 
 require (
-	github.com/anaskhan96/go-password-encoder v0.0.0-20201010210601-c765b799fd72 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -26,7 +27,6 @@ require (
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/olivere/elastic/v7 v7.0.32 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
