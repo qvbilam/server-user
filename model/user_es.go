@@ -3,21 +3,14 @@ package model
 type UserES struct {
 	ID int64 `json:"id"`
 
-	Code         int64 `json:"code"`
-	Level        int64 `json:"level"`
-	FansCount    int64 `json:"fans_count"`
-	FollowCount  int64 `json:"follow_count"`
-	GetLikeCount int64 `json:"get_like_count"`
-
-	Mobile   string `json:"mobile"`
-	Nickname string `json:"nickname"`
-	//Password string `json:"password"`
-	Avatar string `json:"avatar"`
-	Gender string `json:"gender"`
-
-	IsVisible bool `json:"is_visible"`
-
-	//Score float64 `json:"score"`
+	Code        int64  `json:"code"`
+	Level       int64  `json:"level"`
+	FansCount   int64  `json:"fans_count"`
+	FollowCount int64  `json:"follow_count"`
+	Nickname    string `json:"nickname"`
+	Introduce   string `json:"introduce"`
+	Gender      string `json:"gender"`
+	IsVisible   bool   `json:"is_visible"`
 }
 
 func (UserES) GetIndexName() string {
@@ -37,15 +30,8 @@ func (UserES) GetMapping() string {
             "follow_count":{
                 "type":"integer"
             },
-            "get_like_count":{
-                "type":"integer"
-            },
             "is_visible":{
                 "type":"boolean"
-            },
-            "mobile":{
-                "type":"text",
-                "analyzer":"ik_max_word"
             },
             "code":{
                 "type":"text"
@@ -54,13 +40,12 @@ func (UserES) GetMapping() string {
                 "type":"text",
                 "analyzer":"ik_max_word"
             },
-			"avatar":{
+            "introduce":{
                 "type":"text",
                 "analyzer":"ik_max_word"
             },
 			"gender":{
-                "type":"text",
-                "analyzer":"ik_max_word"
+                "type":"text"
             }
         }
     }

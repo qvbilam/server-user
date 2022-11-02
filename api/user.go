@@ -18,13 +18,11 @@ type UserService struct {
 
 // Create 创建用户
 func (s *UserService) Create(ctx context.Context, request *proto.UpdateRequest) (*proto.UserResponse, error) {
-	fmt.Println("创建用户")
+	fmt.Println("注册用户")
 
 	b := business.UserBusiness{
-		Mobile:   request.Mobile,
 		Gender:   request.Gender,
 		Nickname: request.Nickname,
-		Password: request.Password,
 		Avatar:   request.Avatar,
 	}
 
@@ -42,10 +40,8 @@ func (s *UserService) Update(ctx context.Context, request *proto.UpdateRequest) 
 	b := business.UserBusiness{
 		Id:       request.Id,
 		Code:     request.Code,
-		Mobile:   request.Mobile,
 		Gender:   request.Gender,
 		Nickname: request.Nickname,
-		Password: request.Password,
 		Avatar:   request.Avatar,
 	}
 
@@ -127,6 +123,17 @@ func (s *UserService) List(ctx context.Context, request *proto.SearchRequest) (*
 
 func (s *UserService) Login(ctx context.Context, request *proto.LoginRequest) (*proto.UserResponse, error) {
 	fmt.Println("登陆")
+	b := business.AccountBusiness{
+		Id:              0,
+		UserName:        "",
+		Mobile:          "",
+		Email:           "",
+		Password:        "",
+		Ip:              "",
+		LoginMethod:     "",
+		AccountPlatform: nil,
+	}
+
 	b := business.UserBusiness{Mobile: request.Mobile}
 	entity, err := b.GetByMobile()
 	if err != nil {

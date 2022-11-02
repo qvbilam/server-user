@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/olivere/elastic/v7"
-	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log"
@@ -21,12 +20,13 @@ const defaultNicknamePrefixLogoff = "注销用户"
 const defaultNicknameSuffixLen = 6
 
 type UserBusiness struct {
-	Id         int64
-	Code       int64
-	Mobile     string
-	Gender     string
-	Nickname   string
-	Password   string
+	Id        int64
+	AccountId int64
+	Code      int64
+
+	Gender   string
+	Nickname string
+
 	Avatar     string
 	Ids        []int64
 	Keyword    string
@@ -43,23 +43,15 @@ type ModelQuery struct {
 	Fields string
 }
 
-// ExistsMobile 验证手机号
-func (b *UserBusiness) ExistsMobile() bool {
-	fields := ModelQuery{Fields: "mobile"}
-	entity := model.User{}
-	res := global.DB.Where(&model.User{
-		Mobile: b.Mobile,
-	}).Select(fields).First(&entity)
-	if res.RowsAffected == 0 {
-		return false
-	}
-	return true
-}
-
 // Create 创建用户
 func (b *UserBusiness) Create() (*model.User, error) {
-	if b.ExistsMobile() {
-		return nil, status.Errorf(codes.AlreadyExists, "手机号已注册")
+	tx := global.DB.Begin()
+	// 验证账号是否存在
+	if b.AccountId == 0 {
+		return nil, status.Errorf(codes.Internal, "注册用户信息缺少参数")
+	}
+	if res := tx.Where(model.Account{IDModel: model.IDModel{b.AccountId}}).First(&model.Account{}); res.RowsAffected == 0 {
+		return nil, status.Errorf(codes.NotFound, "账号不存在")
 	}
 
 	ucB := UserCodeBusiness{}
@@ -80,44 +72,25 @@ func (b *UserBusiness) Create() (*model.User, error) {
 		b.Nickname = defaultUserNicknamePrefixLogin + utils.RandomNumber(defaultNicknameSuffixLen)
 	}
 
-	if b.Password != "" {
-		b.Password = utils.GeneratePassword(b.Password)
-	}
-
 	entity := model.User{
-		Code:     userCode,
-		Mobile:   b.Mobile,
-		Password: b.Password,
-		Nickname: b.Nickname,
-		Avatar:   b.Avatar,
-		Gender:   b.Gender,
-		Level:    0,
+		AccountId: b.AccountId,
+		Code:      userCode,
+		Nickname:  b.Nickname,
+		Avatar:    b.Avatar,
+		Gender:    b.Gender,
+		Level:     0,
 		Visible: model.Visible{
 			IsVisible: true,
 		},
 	}
 
-	if res := global.DB.Save(&entity); res.RowsAffected == 0 {
-		zap.S().Errorf("创建用户失败: %s", res.Error)
+	if res := tx.Save(&entity); res.RowsAffected == 0 {
+		//zap.S().Errorf("创建用户失败: %s", res.Error)
+		tx.Rollback()
 		return nil, status.Errorf(codes.Internal, "创建失败")
 	}
 
-	return &entity, nil
-}
-
-func (b *UserBusiness) GetByMobile() (*model.User, error) {
-	fields := b.SelectEntityFields()
-	entity := model.User{}
-	if res := global.DB.Unscoped().Select(fields).Where(model.User{
-		Mobile: b.Mobile,
-	}).First(&entity); res.RowsAffected == 0 {
-		return nil, status.Errorf(codes.NotFound, "用户不存在")
-	}
-
-	if entity.DeletedAt != nil {
-		return nil, status.Errorf(codes.NotFound, "用户已注销")
-	}
-
+	tx.Commit()
 	return &entity, nil
 }
 

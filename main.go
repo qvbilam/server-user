@@ -24,6 +24,7 @@ func main() {
 	// 注册服务
 	server := grpc.NewServer()
 	proto.RegisterUserServer(server, &api.UserService{})
+	proto.RegisterAccountServer(server, &api.AccountService{})
 
 	Host := "0.0.0.0"
 	Port, _ := utils.GetFreePort()

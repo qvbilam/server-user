@@ -1,0 +1,52 @@
+syntax = "proto3";
+package userPb.v1;
+import "google/protobuf/empty.proto";
+option go_package="user/api/qvbilam/user/v1/accountPb;v1";
+
+message AccountResponse {
+  int64 id = 1;
+  string userName = 2;
+  string mobile = 3;
+  string email = 4;
+  string createdIP = 5;
+  string loginIP = 6;
+  string lastLoginIP = 7;
+  int64 createdTime = 8;
+  int64 lastLoginTime = 9;
+}
+
+message UpdateAccountPlatformRequest {
+  string platformID = 1;
+  string platformToken = 2;
+  string type = 3;
+}
+
+message UpdateAccountRequest {
+  int64 id = 1;
+  string mobile = 2;
+  string email = 3;
+  string password = 4;
+  string ip = 5;
+  UpdateAccountPlatformRequest accountPlatform = 6;
+}
+
+
+// 密码验证请求
+message CheckPasswordRequest{
+  string mobile = 1;
+  string email = 2;
+  string password = 3;
+  string enctypePassword = 4;
+}
+
+// 验证密码响应
+message CheckPasswordResponse{
+  bool success = 1;
+}
+
+service Account {
+  rpc Create (UpdateAccountRequest) returns (AccountResponse);
+  rpc Update (UpdateAccountRequest) returns (google.protobuf.Empty);
+  rpc Login (Update)
+  rpc CheckPassword (CheckPasswordRequest) returns (CheckPasswordResponse);
+}
