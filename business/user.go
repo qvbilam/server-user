@@ -95,7 +95,7 @@ func (b *UserBusiness) Create() (*model.User, error) {
 }
 
 func (b *UserBusiness) GetDetail() (*model.User, error) {
-	if b.Id == 0 || b.AccountId == 0 {
+	if b.Id == 0 && b.AccountId == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "缺少参数")
 	}
 
