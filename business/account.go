@@ -74,20 +74,29 @@ func (b *AccountBusiness) Create() (*model.Account, error) {
 }
 
 func (b *AccountBusiness) LoginPassword() (*model.Account, error) {
-	tx := global.DB.Begin()
 	entity, condition := model.Account{}, model.Account{}
 	switch b.LoginMethod {
 	case enum.LoginMethodMobile:
+		if b.Mobile == "" {
+			return nil, status.Errorf(codes.InvalidArgument, "请输入账号")
+		}
 		condition.Mobile = b.Mobile
 	case enum.LoginMethodEmail:
+		if b.Email == "" {
+			return nil, status.Errorf(codes.InvalidArgument, "请输入账号")
+		}
 		condition.Email = b.Email
 	case enum.LoginMethodUserName:
+		if b.UserName == "" {
+			return nil, status.Errorf(codes.InvalidArgument, "请输入账号")
+		}
 		condition.UserName = b.UserName
 	default:
-		tx.Rollback()
 		return nil, status.Errorf(codes.InvalidArgument, "非法请求")
 	}
-	if res := tx.Where(condition).Select("id, password").First(&entity); res.RowsAffected == 0 {
+
+	tx := global.DB.Begin()
+	if res := tx.Where(condition).Preload("id, password").First(&entity); res.RowsAffected == 0 {
 		tx.Rollback()
 		return nil, status.Errorf(codes.NotFound, "账号不存在")
 	}

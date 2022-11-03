@@ -111,18 +111,18 @@ func TestUserService_CreateUser(t *testing.T) {
 	}
 }
 
-func TestUserService_CheckPassword(t *testing.T) {
-	r := proto.CheckPasswordRequest{
-		Password:         "123456",
-		EnctypedPassword: "$pbkdf2-sha512$KFO0YCkULF$ba00053b89c2369dbbf6884d7ae052b2dfe878e92f3384778071e8374b793e76",
-	}
-	c := client()
-	res, err := c.CheckPassword(context.Background(), &r)
-	if err != nil {
-		t.Errorf("create user failed: %v", err)
-	}
-	fmt.Printf("验证结果: %+v\n", res)
-}
+//func TestUserService_CheckPassword(t *testing.T) {
+//	r := proto.CheckPasswordRequest{
+//		Password:         "123456",
+//		EnctypedPassword: "$pbkdf2-sha512$KFO0YCkULF$ba00053b89c2369dbbf6884d7ae052b2dfe878e92f3384778071e8374b793e76",
+//	}
+//	c := client()
+//	res, err := c.CheckPassword(context.Background(), &r)
+//	if err != nil {
+//		t.Errorf("create user failed: %v", err)
+//	}
+//	fmt.Printf("验证结果: %+v\n", res)
+//}
 
 func TestUserService_Delete(t *testing.T) {
 	var userId int64

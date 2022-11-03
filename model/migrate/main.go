@@ -27,5 +27,7 @@ func main() {
 	_ = db.AutoMigrate(
 		&model.User{},
 		&model.Level{},
+		&model.AccountPlatform{},
+		&model.Account{},
 	)
 }

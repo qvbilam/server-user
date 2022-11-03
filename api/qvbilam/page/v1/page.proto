@@ -1,6 +1,6 @@
 syntax = "proto3";
 package pagePb.v1;
-option go_package="video/api/qvbilam/page/v1;pageV1";
+option go_package="user/api/qvbilam/page/v1;pageV1";
 
 message PageRequest {
   int64 page = 1;

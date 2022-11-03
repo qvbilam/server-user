@@ -94,13 +94,25 @@ func (b *UserBusiness) Create() (*model.User, error) {
 	return &entity, nil
 }
 
-// GetById 获取用户 todo 批量获取用户等级
-func (b *UserBusiness) GetById() (*model.User, error) {
+func (b *UserBusiness) GetDetail() (*model.User, error) {
+	if b.Id == 0 || b.AccountId == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "缺少参数")
+	}
+
 	fields := b.SelectEntityFields()
 	entity := model.User{}
-	if res := global.DB.Unscoped().Select(fields).First(&entity, b.Id); res.RowsAffected == 0 {
+	condition := model.User{}
+	if b.Id > 0 {
+		condition.ID = b.Id
+	}
+	if b.AccountId > 0 {
+		condition.AccountId = b.AccountId
+	}
+
+	if res := global.DB.Unscoped().Select(fields).Where(condition).First(&entity); res.RowsAffected == 0 {
 		return nil, status.Errorf(codes.NotFound, "用户不存在")
 	}
+
 	if entity.DeletedAt != nil {
 		return nil, status.Errorf(codes.NotFound, "用户已注销")
 	}
@@ -198,14 +210,8 @@ func (b *UserBusiness) EntityToUpdateModel(user *model.User) {
 	if b.Code != 0 {
 		user.Code = b.Code
 	}
-	if b.Mobile != "" {
-		user.Mobile = b.Mobile
-	}
 	if b.Nickname != "" {
 		user.Nickname = b.Nickname
-	}
-	if b.Password != "" {
-		user.Password = utils.GeneratePassword(b.Password)
 	}
 	if b.Avatar != "" {
 		user.Avatar = defaultUserAvatar

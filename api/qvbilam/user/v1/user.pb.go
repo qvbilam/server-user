@@ -12,7 +12,7 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
-	v1 "video/api/qvbilam/page/v1"
+	v1 "user/api/qvbilam/page/v1"
 )
 
 const (

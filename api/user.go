@@ -3,13 +3,10 @@ package api
 import (
 	"context"
 	"fmt"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	proto "user/api/qvbilam/user/v1"
 	"user/business"
 	"user/model"
-	"user/utils"
 )
 
 type UserService struct {
@@ -66,19 +63,19 @@ func (s *UserService) Delete(ctx context.Context, request *proto.UpdateRequest) 
 	return &emptypb.Empty{}, nil
 }
 
-func (s *UserService) CheckPassword(ctx context.Context, request *proto.CheckPasswordRequest) (*proto.CheckPasswordResponse, error) {
-	fmt.Println("验证用户密码")
-
-	res := utils.CheckPassword(request.Password, request.EnctypedPassword)
-	return &proto.CheckPasswordResponse{Success: res}, nil
-}
+//func (s *UserService) CheckPassword(ctx context.Context, request *proto.CheckPasswordRequest) (*proto.CheckPasswordResponse, error) {
+//	fmt.Println("验证用户密码")
+//
+//	res := utils.CheckPassword(request.Password, request.EnctypedPassword)
+//	return &proto.CheckPasswordResponse{Success: res}, nil
+//}
 
 // Detail 获取用户
 func (s *UserService) Detail(ctx context.Context, request *proto.GetUserRequest) (*proto.UserResponse, error) {
 	fmt.Println("获取用户详情: ", request.Id)
 
 	b := business.UserBusiness{Id: request.Id}
-	entity, err := b.GetById()
+	entity, err := b.GetDetail()
 	if err != nil {
 		return nil, err
 	}
@@ -121,38 +118,33 @@ func (s *UserService) List(ctx context.Context, request *proto.SearchRequest) (*
 	return res, nil
 }
 
-func (s *UserService) Login(ctx context.Context, request *proto.LoginRequest) (*proto.UserResponse, error) {
-	fmt.Println("登陆")
-	b := business.AccountBusiness{
-		Id:              0,
-		UserName:        "",
-		Mobile:          "",
-		Email:           "",
-		Password:        "",
-		Ip:              "",
-		LoginMethod:     "",
-		AccountPlatform: nil,
-	}
-
-	b := business.UserBusiness{Mobile: request.Mobile}
-	entity, err := b.GetByMobile()
-	if err != nil {
-		return nil, err
-	}
-	if check := utils.CheckPassword(request.Password, entity.Password); check == false {
-		return nil, status.Error(codes.InvalidArgument, "密码错误")
-	}
-	return userEntityToResponse(entity), nil
-}
-
-// Logout todo 退出登陆
-func (s *UserService) Logout(ctx context.Context, request *proto.GetUserRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "服务不可用")
-}
+//func (s *UserService) Login(ctx context.Context, request *proto.LoginRequest) (*proto.UserResponse, error) {
+//	fmt.Println("登陆")
+//	b := business.AccountBusiness{
+//		Id:              0,
+//		UserName:        "",
+//		Mobile:          "",
+//		Email:           "",
+//		Password:        "",
+//		Ip:              "",
+//		LoginMethod:     "",
+//		AccountPlatform: nil,
+//	}
+//
+//	b := business.UserBusiness{Mobile: request.Mobile}
+//	entity, err := b.GetByMobile()
+//	if err != nil {
+//		return nil, err
+//	}
+//	if check := utils.CheckPassword(request.Password, entity.Password); check == false {
+//		return nil, status.Error(codes.InvalidArgument, "密码错误")
+//	}
+//	return userEntityToResponse(entity), nil
+//}
 
 func (s *UserService) Auth(ctx context.Context, request *proto.AuthRequest) (*proto.UserResponse, error) {
 	b := business.UserBusiness{Id: request.Id}
-	user, err := b.GetById()
+	user, err := b.GetDetail()
 	if err != nil {
 		return nil, err
 	}

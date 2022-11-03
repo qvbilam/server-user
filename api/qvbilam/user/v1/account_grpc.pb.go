@@ -25,7 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type AccountClient interface {
 	Create(ctx context.Context, in *UpdateAccountRequest, opts ...grpc.CallOption) (*AccountResponse, error)
 	Update(ctx context.Context, in *UpdateAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	CheckPassword(ctx context.Context, in *CheckPasswordRequest, opts ...grpc.CallOption) (*CheckPasswordResponse, error)
+	LoginPassword(ctx context.Context, in *LoginPasswordRequest, opts ...grpc.CallOption) (*AccountResponse, error)
 }
 
 type accountClient struct {
@@ -54,9 +54,9 @@ func (c *accountClient) Update(ctx context.Context, in *UpdateAccountRequest, op
 	return out, nil
 }
 
-func (c *accountClient) CheckPassword(ctx context.Context, in *CheckPasswordRequest, opts ...grpc.CallOption) (*CheckPasswordResponse, error) {
-	out := new(CheckPasswordResponse)
-	err := c.cc.Invoke(ctx, "/userPb.v1.Account/CheckPassword", in, out, opts...)
+func (c *accountClient) LoginPassword(ctx context.Context, in *LoginPasswordRequest, opts ...grpc.CallOption) (*AccountResponse, error) {
+	out := new(AccountResponse)
+	err := c.cc.Invoke(ctx, "/userPb.v1.Account/LoginPassword", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (c *accountClient) CheckPassword(ctx context.Context, in *CheckPasswordRequ
 type AccountServer interface {
 	Create(context.Context, *UpdateAccountRequest) (*AccountResponse, error)
 	Update(context.Context, *UpdateAccountRequest) (*emptypb.Empty, error)
-	CheckPassword(context.Context, *CheckPasswordRequest) (*CheckPasswordResponse, error)
+	LoginPassword(context.Context, *LoginPasswordRequest) (*AccountResponse, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -83,8 +83,8 @@ func (UnimplementedAccountServer) Create(context.Context, *UpdateAccountRequest)
 func (UnimplementedAccountServer) Update(context.Context, *UpdateAccountRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedAccountServer) CheckPassword(context.Context, *CheckPasswordRequest) (*CheckPasswordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CheckPassword not implemented")
+func (UnimplementedAccountServer) LoginPassword(context.Context, *LoginPasswordRequest) (*AccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginPassword not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
 
@@ -135,20 +135,20 @@ func _Account_Update_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Account_CheckPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckPasswordRequest)
+func _Account_LoginPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginPasswordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountServer).CheckPassword(ctx, in)
+		return srv.(AccountServer).LoginPassword(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userPb.v1.Account/CheckPassword",
+		FullMethod: "/userPb.v1.Account/LoginPassword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).CheckPassword(ctx, req.(*CheckPasswordRequest))
+		return srv.(AccountServer).LoginPassword(ctx, req.(*LoginPasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -169,8 +169,8 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Account_Update_Handler,
 		},
 		{
-			MethodName: "CheckPassword",
-			Handler:    _Account_CheckPassword_Handler,
+			MethodName: "LoginPassword",
+			Handler:    _Account_LoginPassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
