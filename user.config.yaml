@@ -1,0 +1,14 @@
+apiVersion: "v1"
+kind: ConfigMap
+metadata:
+  name: user
+  labels:
+    app: user
+data:
+  server_name: user-server
+  oss_key: LTAI5tGH3YwADGhBCyB3Cg3s
+  oss_secrect: db9ieC5otI7oye6XlqGr2xPRQfe7sC
+  oss_host: https://qvbilam.oss-cn-hangzhou.aliyuncs.com
+  oss_callback_url: http://nn4fhx.natappfree.cc/v1/callback
+  oss_upload_dir: user-images/
+  oss_expire_time: "300"

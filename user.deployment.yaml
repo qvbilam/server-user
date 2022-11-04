@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-server
+  labels:
+    app: user-server
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: user-server
+  template:
+    metadata:
+      labels:
+        app: user-server
+    spec:
+      containers:
+        - name: user-server
+          image: registry.cn-hangzhou.aliyuncs.com/qvbilam/user-server:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9701
+          env:
+            - name: SERVER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: server_name
+                  name: file
+            - name: OSS_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: oss_key
+                  name: file
+            - name: OSS_SECRECT
+              valueFrom:
+                configMapKeyRef:
+                  key: oss_secrect
+                  name: file
+            - name: OSS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: oss_host
+                  name: file
+            - name: OSS_CALLBACK_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: oss_callback_url
+                  name: file
+            - name: OSS_UPLOAD_DIR
+              valueFrom:
+                configMapKeyRef:
+                  key: oss_upload_dir
+                  name: file
+            - name: OSS_EXPIRE_TIME
+              valueFrom:
+                configMapKeyRef:
+                  key: oss_expire_time
+                  name: file
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+      imagePullSecrets:
+        - name: ali-image-key
