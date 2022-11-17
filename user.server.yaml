@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: file-web-server
+  name: user-server
 spec:
   selector:
-    app: file-web-server
+    app: user-server
   ports:
     - protocol: TCP
       port: 9701

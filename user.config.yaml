@@ -5,10 +5,15 @@ metadata:
   labels:
     app: user
 data:
+  # 服务配置
   server_name: user-server
-  oss_key: LTAI5tGH3YwADGhBCyB3Cg3s
-  oss_secrect: db9ieC5otI7oye6XlqGr2xPRQfe7sC
-  oss_host: https://qvbilam.oss-cn-hangzhou.aliyuncs.com
-  oss_callback_url: http://nn4fhx.natappfree.cc/v1/callback
-  oss_upload_dir: user-images/
-  oss_expire_time: "300"
+  # mysql 配置
+  mysql_host: 127.0.0.1
+  mysql_port: "3306"
+  mysql_user: user
+  mysql_password: root
+  mysql_database: qvbilam_file
+  # 用户服务配置
+  user-server_name: user-server
+  user-server_host: 127.0.0.1
+  user-server_port: "9801"

@@ -20,44 +20,54 @@ spec:
         - name: user-server
           image: registry.cn-hangzhou.aliyuncs.com/qvbilam/user-server:1.0.0
           imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 9701
+          ports: # 容器内部使用端口
+            - containerPort: 9501
           env:
             - name: SERVER_NAME
               valueFrom:
                 configMapKeyRef:
                   key: server_name
-                  name: file
-            - name: OSS_KEY
+                  name: user
+            - name: MYSQL_HOST
               valueFrom:
                 configMapKeyRef:
-                  key: oss_key
-                  name: file
-            - name: OSS_SECRECT
+                  key: mysql_host
+                  name: user
+            - name: MYSQL_PORT
               valueFrom:
                 configMapKeyRef:
-                  key: oss_secrect
-                  name: file
-            - name: OSS_HOST
+                  key: mysql_port
+                  name: user
+            - name: MYSQL_USER
               valueFrom:
                 configMapKeyRef:
-                  key: oss_host
-                  name: file
-            - name: OSS_CALLBACK_URL
+                  key: mysql_user
+                  name: user
+            - name: MYSQL_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  key: oss_callback_url
-                  name: file
-            - name: OSS_UPLOAD_DIR
+                  key: mysql_password
+                  name: user
+            - name: MYSQL_DATABSE
               valueFrom:
                 configMapKeyRef:
-                  key: oss_upload_dir
-                  name: file
-            - name: OSS_EXPIRE_TIME
+                  key: mysql_database
+                  name: user
+            - name: USER-SERVER_NAME
               valueFrom:
                 configMapKeyRef:
-                  key: oss_expire_time
-                  name: file
+                  key: user-server_name
+                  name: user
+            - name: USER-SERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: user-server_host
+                  name: user
+            - name: USER-SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: user-server_port
+                  name: user
           resources:
             limits:
               cpu: 100m
