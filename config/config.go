@@ -2,6 +2,7 @@ package config
 
 type ServerConfig struct {
 	Name        string      `mapstructure:"name" json:"name"`
+	Port        int         `mapstructure:"port" json:"port"`
 	Tags        []string    `mapstructure:"tags" json:"tags"`
 	DBConfig    DBConfig    `mapstructure:"db" json:"db"`
 	ESConfig    ESConfig    `mapstructure:"es" json:"es"`

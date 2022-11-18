@@ -7,5 +7,5 @@ spec:
     app: user-server
   ports:
     - protocol: TCP
-      port: 9701
+      port: 9801
   type: LoadBalancer

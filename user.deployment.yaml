@@ -1,3 +1,4 @@
+# user.deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,54 +20,78 @@ spec:
       containers:
         - name: user-server
           image: registry.cn-hangzhou.aliyuncs.com/qvbilam/user-server:1.0.0
-          imagePullPolicy: IfNotPresent
+          # 不存在拉取
+          # imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports: # 容器内部使用端口
             - containerPort: 9501
           env:
+            # 服务配置
             - name: SERVER_NAME
               valueFrom:
                 configMapKeyRef:
                   key: server_name
                   name: user
-            - name: MYSQL_HOST
+
+            # 数据库配置
+            - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
-                  key: mysql_host
+                  key: db_host
                   name: user
-            - name: MYSQL_PORT
+            - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
-                  key: mysql_port
+                  key: db_port
                   name: user
-            - name: MYSQL_USER
+            - name: DB_USER
               valueFrom:
                 configMapKeyRef:
-                  key: mysql_user
+                  key: db_user
                   name: user
-            - name: MYSQL_PASSWORD
+            - name: DB_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  key: mysql_password
+                  key: db_password
                   name: user
-            - name: MYSQL_DATABSE
+            - name: DB_DATABSE
               valueFrom:
                 configMapKeyRef:
-                  key: mysql_database
+                  key: db_database
                   name: user
-            - name: USER-SERVER_NAME
+
+            # es 配置
+            - name: ES_HOST
               valueFrom:
                 configMapKeyRef:
-                  key: user-server_name
+                  key: es_host
                   name: user
-            - name: USER-SERVER_HOST
+            - name: ES_PORT
               valueFrom:
                 configMapKeyRef:
-                  key: user-server_host
+                  key: es_port
                   name: user
-            - name: USER-SERVER_PORT
+
+            # 缓存配置
+            - name: REDIS_HOST
               valueFrom:
                 configMapKeyRef:
-                  key: user-server_port
+                  key: redis_host
+                  name: user
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: redis_port
+                  name: user
+            - name: REDIS_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: redis_password
+                  name: user
+            - name: REDIS_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  key: redis_database
                   name: user
           resources:
             limits:

@@ -7,13 +7,20 @@ metadata:
 data:
   # 服务配置
   server_name: user-server
+
   # mysql 配置
-  mysql_host: 127.0.0.1
-  mysql_port: "3306"
-  mysql_user: user
-  mysql_password: root
-  mysql_database: qvbilam_file
-  # 用户服务配置
-  user-server_name: user-server
-  user-server_host: 127.0.0.1
-  user-server_port: "9801"
+  db_host: docker.for.mac.host.internal
+  db_port: "3306"
+  db_user: root
+  db_password: root
+  db_database: qvbilam_user
+
+  # redis 配置
+  redis_host: docker.for.mac.host.internal
+  redis_port: "6379"
+  redis_password: ""
+  redis_database: "0"
+
+  # es 配置
+  es_host: docker.for.mac.host.internal
+  es_port: "9200"
