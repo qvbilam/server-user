@@ -10,8 +10,8 @@ import (
 )
 
 func InitConfig() {
-	initViperConfig()
 	initEnvConfig()
+	initViperConfig()
 }
 
 func initEnvConfig() {
