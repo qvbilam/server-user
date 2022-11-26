@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"google.golang.org/protobuf/types/known/emptypb"
 	proto "user/api/qvbilam/user/v1"
 	"user/business"
@@ -44,6 +45,7 @@ func (s *AccountService) Update(ctx context.Context, request *proto.UpdateAccoun
 }
 
 func (s *AccountService) LoginPassword(ctx context.Context, request *proto.LoginPasswordRequest) (*proto.AccountResponse, error) {
+	fmt.Println("密码登陆")
 	b := business.AccountBusiness{
 		UserName:    request.Username,
 		Mobile:      request.Mobile,

@@ -6,6 +6,8 @@ spec:
   selector:
     app: user-server
   ports:
-    - protocol: TCP
+    - name: grpc-user-server
+      protocol: TCP
       port: 9801
+      targetPort: 9501
   type: LoadBalancer

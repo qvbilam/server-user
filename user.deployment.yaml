@@ -16,6 +16,7 @@ spec:
     metadata:
       labels:
         app: user-server
+        version: v1.0
     spec:
       containers:
         - name: user-server
@@ -54,7 +55,7 @@ spec:
                 configMapKeyRef:
                   key: db_password
                   name: user
-            - name: DB_DATABSE
+            - name: DB_DATABASE
               valueFrom:
                 configMapKeyRef:
                   key: db_database
