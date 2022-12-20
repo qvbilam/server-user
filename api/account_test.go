@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"google.golang.org/grpc"
+	"net"
 	"testing"
 	proto "user/api/qvbilam/user/v1"
 )
@@ -22,9 +23,24 @@ func AccountClient() proto.AccountClient {
 	return client
 }
 
+func TestIP(t *testing.T) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, value := range addrs {
+		if ipnet, ok := value.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				fmt.Println(ipnet.IP.String())
+			}
+		}
+	}
+}
+
 // 测试注册
 func TestAccountService_Create(t *testing.T) {
-	mobile := "13501294164"
+	mobile := "13501294167"
 	password := "123456"
 	email := ""
 	c := AccountClient()
