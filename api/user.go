@@ -6,6 +6,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	proto "user/api/qvbilam/user/v1"
 	"user/business"
+	"user/middleware"
 	"user/model"
 )
 
@@ -143,7 +144,11 @@ func (s *UserService) List(ctx context.Context, request *proto.SearchRequest) (*
 //}
 
 func (s *UserService) Auth(ctx context.Context, request *proto.AuthRequest) (*proto.UserResponse, error) {
-	b := business.UserBusiness{Id: request.Id}
+	userId, err := middleware.Auth(request.Token)
+	if err != nil {
+		return nil, err
+	}
+	b := business.UserBusiness{Id: userId}
 	user, err := b.GetDetail()
 	if err != nil {
 		return nil, err

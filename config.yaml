@@ -15,3 +15,7 @@ redis:
   user: ""
   password: ""
   database: 0
+jwt:
+  key: "Ep<4Iy#2Im~4Ab^8Px;6Oj.5Hi^8Yh)6"
+  expire: 86400
+  issuer: "qvbilam-user"

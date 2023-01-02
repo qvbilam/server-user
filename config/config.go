@@ -7,6 +7,7 @@ type ServerConfig struct {
 	DBConfig    DBConfig    `mapstructure:"db" json:"db"`
 	ESConfig    ESConfig    `mapstructure:"es" json:"es"`
 	RedisConfig RedisConfig `mapstructure:"redis" json:"redis"`
+	JWTConfig   JWTConfig   `mapstructure:"jwt" json:"jwt"`
 }
 
 type DBConfig struct {
@@ -28,4 +29,10 @@ type RedisConfig struct {
 	User     string `mapstructure:"user" json:"user"`
 	Password string `mapstructure:"password" json:"password"`
 	Database int    `mapstructure:"database" json:"database"`
+}
+
+type JWTConfig struct {
+	Issuer     string `mapstructure:"issuer" json:"issuer"`
+	Expire     int64  `mapstructure:"expire" json:"expire"`
+	SigningKey string `mapstructure:"key" json:"signingKey"`
 }

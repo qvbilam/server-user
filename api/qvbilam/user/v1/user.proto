@@ -59,8 +59,7 @@ message UsersResponse {
 //}
 
 message AuthRequest {
-  int64 id = 1;
-  string token = 2;
+  string token = 1;
 }
 
 
@@ -73,5 +72,5 @@ service User {
   rpc Search(SearchRequest) returns (UsersResponse); // 搜索用户
 //  rpc Login(LoginRequest) returns (UserResponse); // 登陆
 //  rpc Logout(GetUserRequest) returns (google.protobuf.Empty);
-//  rpc Auth(AuthRequest) returns (UserResponse); // 授权
+  rpc Auth(AuthRequest) returns (UserResponse); // 授权
 }

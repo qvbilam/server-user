@@ -8,6 +8,11 @@ data:
   # 服务配置
   server_name: user-server
 
+  # jwt 配置
+  jwt_key: Ep<4Iy#2Im~4Ab^8Px;6Oj.5Hi^8Yh)6
+  jwt_expire: "86400"
+  jwt_issuer: qvbilam-user
+
   # mysql 配置
   db_host: docker.for.mac.host.internal
   db_port: "3306"

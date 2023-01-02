@@ -29,6 +29,9 @@ type UserClient interface {
 	Detail(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	List(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*UsersResponse, error)
 	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*UsersResponse, error)
+	//  rpc Login(LoginRequest) returns (UserResponse); // 登陆
+	//  rpc Logout(GetUserRequest) returns (google.protobuf.Empty);
+	Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*UserResponse, error)
 }
 
 type userClient struct {
@@ -93,6 +96,15 @@ func (c *userClient) Search(ctx context.Context, in *SearchRequest, opts ...grpc
 	return out, nil
 }
 
+func (c *userClient) Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+	out := new(UserResponse)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/Auth", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -103,6 +115,9 @@ type UserServer interface {
 	Detail(context.Context, *GetUserRequest) (*UserResponse, error)
 	List(context.Context, *SearchRequest) (*UsersResponse, error)
 	Search(context.Context, *SearchRequest) (*UsersResponse, error)
+	//  rpc Login(LoginRequest) returns (UserResponse); // 登陆
+	//  rpc Logout(GetUserRequest) returns (google.protobuf.Empty);
+	Auth(context.Context, *AuthRequest) (*UserResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -127,6 +142,9 @@ func (UnimplementedUserServer) List(context.Context, *SearchRequest) (*UsersResp
 }
 func (UnimplementedUserServer) Search(context.Context, *SearchRequest) (*UsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
+}
+func (UnimplementedUserServer) Auth(context.Context, *AuthRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -249,6 +267,24 @@ func _User_Search_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_Auth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Auth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userPb.v1.User/Auth",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Auth(ctx, req.(*AuthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -279,6 +315,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Search",
 			Handler:    _User_Search_Handler,
+		},
+		{
+			MethodName: "Auth",
+			Handler:    _User_Auth_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

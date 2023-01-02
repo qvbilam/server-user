@@ -34,6 +34,23 @@ spec:
                   key: server_name
                   name: user
 
+            # jwt 配置
+            - name: JWT_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: jwt_key
+                  name: user
+            - name: JWT_EXPIRE
+              valueFrom:
+                configMapKeyRef:
+                  key: jwt_expire
+                  name: user
+            - name: JWT_ISSUER
+              valueFrom:
+                configMapKeyRef:
+                  key: jwt_issuer
+                  name: user
+
             # 数据库配置
             - name: DB_HOST
               valueFrom:
