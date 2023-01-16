@@ -12,6 +12,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	v1 "user/api/qvbilam/page/v1"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -28,6 +29,8 @@ type UserClient interface {
 	Delete(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Detail(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	List(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*UsersResponse, error)
+	OnlineUsers(ctx context.Context, in *v1.PageRequest, opts ...grpc.CallOption) (*UsersResponse, error)
+	AllUsers(ctx context.Context, in *v1.PageRequest, opts ...grpc.CallOption) (*UsersResponse, error)
 	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*UsersResponse, error)
 	//  rpc Login(LoginRequest) returns (UserResponse); // 登陆
 	//  rpc Logout(GetUserRequest) returns (google.protobuf.Empty);
@@ -87,6 +90,24 @@ func (c *userClient) List(ctx context.Context, in *SearchRequest, opts ...grpc.C
 	return out, nil
 }
 
+func (c *userClient) OnlineUsers(ctx context.Context, in *v1.PageRequest, opts ...grpc.CallOption) (*UsersResponse, error) {
+	out := new(UsersResponse)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/OnlineUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) AllUsers(ctx context.Context, in *v1.PageRequest, opts ...grpc.CallOption) (*UsersResponse, error) {
+	out := new(UsersResponse)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/AllUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userClient) Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*UsersResponse, error) {
 	out := new(UsersResponse)
 	err := c.cc.Invoke(ctx, "/userPb.v1.User/Search", in, out, opts...)
@@ -114,6 +135,8 @@ type UserServer interface {
 	Delete(context.Context, *UpdateRequest) (*emptypb.Empty, error)
 	Detail(context.Context, *GetUserRequest) (*UserResponse, error)
 	List(context.Context, *SearchRequest) (*UsersResponse, error)
+	OnlineUsers(context.Context, *v1.PageRequest) (*UsersResponse, error)
+	AllUsers(context.Context, *v1.PageRequest) (*UsersResponse, error)
 	Search(context.Context, *SearchRequest) (*UsersResponse, error)
 	//  rpc Login(LoginRequest) returns (UserResponse); // 登陆
 	//  rpc Logout(GetUserRequest) returns (google.protobuf.Empty);
@@ -139,6 +162,12 @@ func (UnimplementedUserServer) Detail(context.Context, *GetUserRequest) (*UserRe
 }
 func (UnimplementedUserServer) List(context.Context, *SearchRequest) (*UsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedUserServer) OnlineUsers(context.Context, *v1.PageRequest) (*UsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OnlineUsers not implemented")
+}
+func (UnimplementedUserServer) AllUsers(context.Context, *v1.PageRequest) (*UsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllUsers not implemented")
 }
 func (UnimplementedUserServer) Search(context.Context, *SearchRequest) (*UsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
@@ -249,6 +278,42 @@ func _User_List_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_OnlineUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.PageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).OnlineUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userPb.v1.User/OnlineUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).OnlineUsers(ctx, req.(*v1.PageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_AllUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.PageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).AllUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userPb.v1.User/AllUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).AllUsers(ctx, req.(*v1.PageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _User_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchRequest)
 	if err := dec(in); err != nil {
@@ -311,6 +376,14 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _User_List_Handler,
+		},
+		{
+			MethodName: "OnlineUsers",
+			Handler:    _User_OnlineUsers_Handler,
+		},
+		{
+			MethodName: "AllUsers",
+			Handler:    _User_AllUsers_Handler,
 		},
 		{
 			MethodName: "Search",

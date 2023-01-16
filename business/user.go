@@ -7,6 +7,7 @@ import (
 	"github.com/olivere/elastic/v7"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 	"log"
 	"time"
 	"user/global"
@@ -175,8 +176,17 @@ func (b *UserBusiness) Search() (*[]model.User, int64) {
 func (b *UserBusiness) GetByIds() (*[]model.User, int64) {
 	fields := b.SelectEntityFields()
 	var entity []model.User
+	//var condition map[string]interface{}
+	var res *gorm.DB
 
-	res := global.DB.Select(fields).Find(&entity, b.Ids)
+	tx := global.DB
+	tx.Select(fields)
+	if b.Ids != nil {
+		res = tx.Find(&entity, b.Ids)
+	} else {
+		res = tx.Find(&entity)
+	}
+
 	return &entity, res.RowsAffected
 }
 

@@ -107,7 +107,9 @@ func (s *UserService) Search(ctx context.Context, request *proto.SearchRequest) 
 
 func (s *UserService) List(ctx context.Context, request *proto.SearchRequest) (*proto.UsersResponse, error) {
 	fmt.Println("获取用户列表")
-	b := business.UserBusiness{Ids: request.Id}
+	b := business.UserBusiness{
+		Ids: request.Id,
+	}
 
 	entities, count := b.GetByIds()
 
