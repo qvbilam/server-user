@@ -34,8 +34,10 @@ message UserResponse{
 // 获取用户等级响应
 message LevelResponse{
   int64 id = 1;
-  string name = 2;
-  string icon = 3;
+  int64 level = 2;
+  string name = 3;
+  string icon = 4;
+  int64 exp = 5;
 }
 
 
@@ -62,6 +64,18 @@ message AuthRequest {
   string token = 1;
 }
 
+message LevelExpRequest {
+  int64 userId = 1;
+  int64 exp = 2;
+  string businessType = 3;
+  int64 businessId = 4;
+}
+
+message LevelExpResponse{
+  bool isUpgrade = 1;
+  LevelResponse level = 2;
+}
+
 
 service User {
   rpc Create(UpdateRequest) returns (UserResponse); // 创建用户
@@ -73,4 +87,5 @@ service User {
 //  rpc Login(LoginRequest) returns (UserResponse); // 登陆
 //  rpc Logout(GetUserRequest) returns (google.protobuf.Empty);
   rpc Auth(AuthRequest) returns (UserResponse); // 授权
+  rpc LevelExp(LevelExpRequest) returns (LevelExpResponse); // 经验
 }

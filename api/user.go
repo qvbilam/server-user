@@ -145,6 +145,31 @@ func (s *UserService) List(ctx context.Context, request *proto.SearchRequest) (*
 //	return userEntityToResponse(entity), nil
 //}
 
+func (s *UserService) LevelExp(ctx context.Context, request *proto.LevelExpRequest) (*proto.LevelExpResponse, error) {
+	b := business.LevelBusiness{
+		UserID:       request.UserId,
+		Exp:          request.Exp,
+		BusinessType: request.BusinessType,
+		BusinessID:   request.BusinessId,
+	}
+	isUpgrade, level, err := b.LevelExp()
+	if err != nil {
+		return nil, err
+	}
+
+	res := proto.LevelExpResponse{}
+	res.IsUpgrade = isUpgrade
+	if level != nil {
+		res.Level.Id = level.ID
+		res.Level.Name = level.Name
+		res.Level.Level = level.Level
+		res.Level.Exp = level.Exp
+		res.Level.Icon = level.Icon
+	}
+
+	return &res, nil
+}
+
 func (s *UserService) Auth(ctx context.Context, request *proto.AuthRequest) (*proto.UserResponse, error) {
 	userId, err := middleware.Auth(request.Token)
 	if err != nil {
