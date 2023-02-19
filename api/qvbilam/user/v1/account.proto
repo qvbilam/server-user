@@ -15,6 +15,7 @@ message AccountResponse {
   int64 createdTime = 8;
   int64 lastLoginTime = 9;
   UserResponse user = 10;
+  string token = 11;
 }
 
 message UpdateAccountPlatformRequest {

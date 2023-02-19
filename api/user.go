@@ -19,9 +19,10 @@ func (s *UserService) Create(ctx context.Context, request *proto.UpdateRequest) 
 	fmt.Println("注册用户")
 
 	b := business.UserBusiness{
-		Gender:   request.Gender,
-		Nickname: request.Nickname,
-		Avatar:   request.Avatar,
+		AccountId: request.AccountId,
+		Gender:    request.Gender,
+		Nickname:  request.Nickname,
+		Avatar:    request.Avatar,
 	}
 
 	entity, err := b.Create()
@@ -97,12 +98,13 @@ func (s *UserService) Search(ctx context.Context, request *proto.SearchRequest) 
 	entities, count := b.Search()
 	res := &proto.UsersResponse{}
 	res.Total = count
-	for _, entity := range *entities {
-		res.Users = append(res.Users, userEntityToResponse(&entity))
+	if res.Total != 0 {
+		for _, entity := range *entities {
+			res.Users = append(res.Users, userEntityToResponse(&entity))
+		}
 	}
 
 	return res, nil
-	//return nil, status.Error(codes.Unimplemented, "服务不可用")
 }
 
 func (s *UserService) List(ctx context.Context, request *proto.SearchRequest) (*proto.UsersResponse, error) {

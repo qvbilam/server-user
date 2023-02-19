@@ -16,7 +16,7 @@ type User struct {
 	Avatar      string `gorm:"type:varchar(255); not null default '';comment:头像"`
 	Introduce   string `gorm:"type:varchar(2048); not null default '';comment:简介"`
 	Gender      string `gorm:"column:gender;default:male;type:varchar(6);comment:female.女,male.男"`
-	VIPLevel    int64  `gorm:"type:int;not null default 0;comment:会员等级"`
+	VipLevel    int64  `gorm:"type:int;not null default 0;comment:会员等级"`
 	Level       int64  `gorm:"type:int;not null default 0;comment:等级"`
 	LevelExp    int64  `gorm:"type:int;not null default 0;comment:等级经验"`
 	FansCount   int64  `gorm:"type:int;not null default 0;comment:粉丝数量"`

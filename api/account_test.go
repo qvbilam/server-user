@@ -40,7 +40,7 @@ func TestIP(t *testing.T) {
 
 // 测试注册
 func TestAccountService_Create(t *testing.T) {
-	mobile := "13501294167"
+	mobile := "13501294111"
 	password := "123456"
 	email := ""
 	c := AccountClient()
@@ -59,7 +59,7 @@ func TestAccountService_Create(t *testing.T) {
 
 // 测试登陆
 func TestAccountService_LoginPassword(t *testing.T) {
-	mobile := "13501294164"
+	mobile := "13501294174"
 	password := "123456"
 
 	c := AccountClient()

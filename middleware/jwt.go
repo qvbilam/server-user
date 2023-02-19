@@ -27,7 +27,11 @@ func Auth(token string) (int64, error) {
 	}
 
 	// Bearer TokenValue 获取空格后面部分 TokenValue
-	token = strings.Split(token, " ")[1]
+	tokens := strings.Split(token, " ")
+	if len(tokens) < 2 {
+		return 0, status.Errorf(codes.Unauthenticated, "错误token")
+	}
+	token = tokens[1]
 
 	j := NewJWT()
 	user, err := j.ParseToken(token)

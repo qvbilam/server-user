@@ -51,7 +51,7 @@ func (b *UserBusiness) Create() (*model.User, error) {
 	if b.AccountId == 0 {
 		return nil, status.Errorf(codes.Internal, "注册用户信息缺少参数")
 	}
-	if res := tx.Where(model.Account{IDModel: model.IDModel{b.AccountId}}).First(&model.Account{}); res.RowsAffected == 0 {
+	if res := tx.Where(model.Account{IDModel: model.IDModel{ID: b.AccountId}}).First(&model.Account{}); res.RowsAffected == 0 {
 		return nil, status.Errorf(codes.NotFound, "账号不存在")
 	}
 
@@ -158,12 +158,15 @@ func (b *UserBusiness) Search() (*[]model.User, int64) {
 	// 获取总数
 	total := result.Hits.TotalHits.Value
 
-	// 获取视频 ids
+	// 获取 ids
 	userIds := make([]int64, 0)
 	for _, user := range result.Hits.Hits {
 		userESModel := model.UserES{}
 		_ = json.Unmarshal(user.Source, &userESModel)
 		userIds = append(userIds, userESModel.ID)
+	}
+	if len(userIds) == 0 {
+		return nil, 0
 	}
 
 	b.Ids = userIds

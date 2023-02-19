@@ -13,6 +13,7 @@ message UpdateRequest{
   string password = 5;
   string gender = 6;
   string avatar = 7;
+  int64 accountId = 8;
 }
 
 // 获取用户请求

@@ -73,6 +73,7 @@ func (s *AccountService) LoginPassword(ctx context.Context, request *proto.Login
 	}
 
 	return &proto.AccountResponse{
+		Token:    GenerateUserToken(&userRes),
 		UserName: entity.UserName,
 		Mobile:   entity.Mobile,
 		Email:    entity.Email,
