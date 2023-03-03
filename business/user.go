@@ -195,7 +195,7 @@ func (b *UserBusiness) GetByIds() (*[]model.User, int64) {
 
 func (b *UserBusiness) Update() error {
 	var user model.User
-	if result := global.DB.Where(user.DeletedAt, nil).First(&user, b.Id); result.RowsAffected == 0 {
+	if result := global.DB.First(&user, b.Id); result.RowsAffected == 0 {
 		return status.Errorf(codes.NotFound, "用户不存在")
 	}
 
