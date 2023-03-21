@@ -28,7 +28,7 @@ func TestRedisServer_GetUserCodes(t *testing.T) {
 	count := 10
 	setClient()
 	s := RedisServer{}
-	res, err := s.GetUserCodes(int64(count))
+	res, err := s.RandomUserCodes(int64(count))
 	if err != nil {
 		fmt.Println("获取错误", err)
 		return
