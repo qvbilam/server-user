@@ -33,6 +33,12 @@ message UpdateAccountRequest {
   UpdateAccountPlatformRequest accountPlatform = 6;
 }
 
+message DeviceRequest{
+    string version = 1;
+    string client = 2;
+    string device = 3;
+}
+
 // 密码登陆
 message LoginPasswordRequest{
   string method = 1;
@@ -41,10 +47,19 @@ message LoginPasswordRequest{
   string email = 4;
   string password = 5;
   string ip = 6;
+  DeviceRequest device = 7;
+}
+
+// 验证码登陆
+message LoginMobileRequest{
+  string mobile = 1;
+  string ip = 2;
+  DeviceRequest device = 3;
 }
 
 service Account {
   rpc Create (UpdateAccountRequest) returns (AccountResponse);
   rpc Update (UpdateAccountRequest) returns (google.protobuf.Empty);
   rpc LoginPassword (LoginPasswordRequest) returns (AccountResponse);
+  rpc LoginMobile (LoginMobileRequest) returns (AccountResponse);
 }

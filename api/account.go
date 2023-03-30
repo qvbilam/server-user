@@ -2,10 +2,11 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"google.golang.org/protobuf/types/known/emptypb"
 	proto "user/api/qvbilam/user/v1"
 	"user/business"
+	"user/enum"
+	"user/model"
 )
 
 type AccountService struct {
@@ -45,7 +46,6 @@ func (s *AccountService) Update(ctx context.Context, request *proto.UpdateAccoun
 }
 
 func (s *AccountService) LoginPassword(ctx context.Context, request *proto.LoginPasswordRequest) (*proto.AccountResponse, error) {
-	fmt.Println("密码登陆")
 	b := business.AccountBusiness{
 		UserName:    request.Username,
 		Mobile:      request.Mobile,
@@ -59,6 +59,25 @@ func (s *AccountService) LoginPassword(ctx context.Context, request *proto.Login
 	if err != nil {
 		return nil, err
 	}
+
+	return s.loginResponse(entity)
+}
+
+func (s *AccountService) LoginSmsCode(ctx context.Context, request *proto.LoginMobileRequest) (*proto.AccountResponse, error) {
+	b := business.AccountBusiness{
+		Mobile:      request.Mobile,
+		Ip:          request.Ip,
+		LoginMethod: enum.LoginMethodSms,
+	}
+	entity, err := b.LoginMobileCode()
+	if err != nil {
+		return nil, err
+	}
+	
+	return s.loginResponse(entity)
+}
+
+func (s *AccountService) loginResponse(entity *model.Account) (*proto.AccountResponse, error) {
 	// 获取用户信息
 	ub := business.UserBusiness{AccountId: entity.ID}
 	userEntity, _ := ub.GetDetail()
