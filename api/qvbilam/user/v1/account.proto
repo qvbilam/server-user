@@ -57,9 +57,15 @@ message LoginMobileRequest{
   DeviceRequest device = 3;
 }
 
+message LoginPlatformRequest{
+  string type = 1;
+  string code = 2;
+}
+
 service Account {
   rpc Create (UpdateAccountRequest) returns (AccountResponse);
   rpc Update (UpdateAccountRequest) returns (google.protobuf.Empty);
   rpc LoginPassword (LoginPasswordRequest) returns (AccountResponse);
   rpc LoginMobile (LoginMobileRequest) returns (AccountResponse);
+  rpc LoginPlatform(LoginPlatformRequest) returns (AccountResponse);
 }

@@ -25,7 +25,7 @@ func (s *UserService) Create(ctx context.Context, request *proto.UpdateRequest) 
 		Avatar:    request.Avatar,
 	}
 
-	entity, err := b.Create()
+	entity, err := b.Create(nil)
 	if err != nil {
 		return nil, err
 	}

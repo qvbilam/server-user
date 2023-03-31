@@ -20,13 +20,6 @@ func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccoun
 		Password: request.Password,
 		Ip:       request.Ip,
 	}
-	if request.AccountPlatform != nil && request.AccountPlatform.PlatformID != "" {
-		b.AccountPlatform = &business.AccountPlatform{
-			PlatformID:    request.AccountPlatform.PlatformID,
-			PlatformToken: request.AccountPlatform.PlatformToken,
-			Type:          request.AccountPlatform.Type,
-		}
-	}
 	// 创建账号
 	entity, err := b.Create()
 	if err != nil {
@@ -34,7 +27,7 @@ func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccoun
 	}
 	// 创建默认用户信息
 	ub := business.UserBusiness{AccountId: entity.ID}
-	if _, err := ub.Create(); err != nil {
+	if _, err := ub.Create(nil); err != nil {
 		return nil, err
 	}
 
@@ -73,7 +66,20 @@ func (s *AccountService) LoginSmsCode(ctx context.Context, request *proto.LoginM
 	if err != nil {
 		return nil, err
 	}
-	
+
+	return s.loginResponse(entity)
+}
+
+func (s *AccountService) LoginPlatform(ctx context.Context, request *proto.LoginPlatformRequest) (*proto.AccountResponse, error) {
+	b := business.AccountBusiness{
+		AccountPlatform: &business.AccountPlatform{
+			Type: request.Type,
+		},
+	}
+	entity, err := b.LoginPlatform(request.Code)
+	if err != nil {
+		return nil, err
+	}
 	return s.loginResponse(entity)
 }
 

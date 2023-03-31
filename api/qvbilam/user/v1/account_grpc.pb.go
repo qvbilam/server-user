@@ -27,6 +27,7 @@ type AccountClient interface {
 	Update(ctx context.Context, in *UpdateAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	LoginPassword(ctx context.Context, in *LoginPasswordRequest, opts ...grpc.CallOption) (*AccountResponse, error)
 	LoginMobile(ctx context.Context, in *LoginMobileRequest, opts ...grpc.CallOption) (*AccountResponse, error)
+	LoginPlatform(ctx context.Context, in *LoginPlatformRequest, opts ...grpc.CallOption) (*AccountResponse, error)
 }
 
 type accountClient struct {
@@ -73,6 +74,15 @@ func (c *accountClient) LoginMobile(ctx context.Context, in *LoginMobileRequest,
 	return out, nil
 }
 
+func (c *accountClient) LoginPlatform(ctx context.Context, in *LoginPlatformRequest, opts ...grpc.CallOption) (*AccountResponse, error) {
+	out := new(AccountResponse)
+	err := c.cc.Invoke(ctx, "/userPb.v1.Account/LoginPlatform", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServer is the server API for Account service.
 // All implementations must embed UnimplementedAccountServer
 // for forward compatibility
@@ -81,6 +91,7 @@ type AccountServer interface {
 	Update(context.Context, *UpdateAccountRequest) (*emptypb.Empty, error)
 	LoginPassword(context.Context, *LoginPasswordRequest) (*AccountResponse, error)
 	LoginMobile(context.Context, *LoginMobileRequest) (*AccountResponse, error)
+	LoginPlatform(context.Context, *LoginPlatformRequest) (*AccountResponse, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -99,6 +110,9 @@ func (UnimplementedAccountServer) LoginPassword(context.Context, *LoginPasswordR
 }
 func (UnimplementedAccountServer) LoginMobile(context.Context, *LoginMobileRequest) (*AccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginMobile not implemented")
+}
+func (UnimplementedAccountServer) LoginPlatform(context.Context, *LoginPlatformRequest) (*AccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginPlatform not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
 
@@ -185,6 +199,24 @@ func _Account_LoginMobile_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Account_LoginPlatform_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginPlatformRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).LoginPlatform(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userPb.v1.Account/LoginPlatform",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).LoginPlatform(ctx, req.(*LoginPlatformRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Account_ServiceDesc is the grpc.ServiceDesc for Account service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -207,6 +239,10 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoginMobile",
 			Handler:    _Account_LoginMobile_Handler,
+		},
+		{
+			MethodName: "LoginPlatform",
+			Handler:    _Account_LoginPlatform_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -34,3 +34,8 @@ func (k RedisKey) GetUserSpecialCodesKey() string {
 func (k RedisKey) GetUserTokenKey(userId int64) string {
 	return prefix + "user:token:" + strconv.Itoa(int(userId))
 }
+
+// GetOAuthQQTokenKey 获取 oauth qq token
+func (k RedisKey) GetOAuthQQTokenKey(appId string) string {
+	return prefix + "oauth:qq:token:" + appId
+}

@@ -45,8 +45,12 @@ type ModelQuery struct {
 }
 
 // Create 创建用户
-func (b *UserBusiness) Create() (*model.User, error) {
-	tx := global.DB.Begin()
+func (b *UserBusiness) Create(tx *gorm.DB) (*model.User, error) {
+	isOp := false
+	if tx == nil {
+		isOp = true
+		tx = global.DB.Begin()
+	}
 	// 验证账号是否存在
 	if b.AccountId == 0 {
 		return nil, status.Errorf(codes.Internal, "注册用户信息缺少参数")
@@ -87,11 +91,15 @@ func (b *UserBusiness) Create() (*model.User, error) {
 
 	if res := tx.Save(&entity); res.RowsAffected == 0 {
 		//zap.S().Errorf("创建用户失败: %s", res.Error)
-		tx.Rollback()
+		if isOp {
+			tx.Rollback()
+		}
 		return nil, status.Errorf(codes.Internal, "创建失败")
 	}
 
-	tx.Commit()
+	if isOp {
+		tx.Commit()
+	}
 	return &entity, nil
 }
 

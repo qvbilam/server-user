@@ -14,9 +14,8 @@ import (
 )
 
 type AccountPlatform struct {
-	PlatformID    string
-	PlatformToken string
-	Type          string
+	PlatformID string
+	Type       string
 }
 
 type AccountBusiness struct {
@@ -59,17 +58,6 @@ func (b *AccountBusiness) Create() (*model.Account, error) {
 	if err := tx.Save(&m); err.RowsAffected == 0 {
 		tx.Rollback()
 		return nil, status.Errorf(codes.Internal, "创建账号失败")
-	}
-
-	// 创建第三方账号
-	if b.AccountPlatform != nil {
-		apm := model.AccountPlatform{PlatformID: b.AccountPlatform.PlatformID, Type: b.AccountPlatform.Type}
-		if b.existsPlatform(tx) { // 创建
-			apm.AccountID = m.ID
-			tx.Save(&apm)
-		} else { // 绑定
-			tx.Where(apm).Updates(model.AccountPlatform{AccountID: m.ID})
-		}
 	}
 
 	tx.Commit()
@@ -145,6 +133,93 @@ func (b *AccountBusiness) LoginMobileCode() (*model.Account, error) {
 
 	tx.Commit()
 	return &entity, nil
+}
+
+func (b *AccountBusiness) getPlatformUser(code string) (*OAuthUserResponse, error) {
+	var u *OAuthUserResponse
+	switch b.AccountPlatform.Type {
+	case enum.LoginMethodPlatformQQ:
+		oauth := OAuthQQBusiness{
+			AppId:     global.ServerConfig.OauthQQConfig.AppId,
+			AppSecret: global.ServerConfig.OauthQQConfig.AppSecret,
+			Uri:       global.ServerConfig.OauthQQConfig.Uri,
+		}
+		u = oauth.User(code)
+	case enum.LoginMethodPlatformWGitHub:
+		oauth := OAuthGitHubBusiness{
+			AppId:      global.ServerConfig.OauthGithubConfig.AppId,
+			AppSecrete: global.ServerConfig.OauthGithubConfig.AppSecret,
+			Uri:        global.ServerConfig.OauthGithubConfig.Uri,
+		}
+		u = oauth.User(code)
+		return nil, status.Errorf(codes.Unimplemented, "暂不支持")
+	default:
+		return nil, status.Errorf(codes.InvalidArgument, "非法请求")
+	}
+
+	return u, nil
+}
+
+func (b *AccountBusiness) LoginPlatform(code string) (*model.Account, error) {
+	if b.AccountPlatform.Type == "" || code == "" {
+		return nil, status.Errorf(codes.Internal, "第三方登陆参数错误")
+	}
+	u, err := b.getPlatformUser(code)
+	if err != nil {
+		return nil, err
+	}
+	if u == nil || u.PlatformId == "" {
+		return nil, status.Errorf(codes.Internal, "第三方登陆失败")
+	}
+
+	tx := global.DB.Begin()
+	accountEntity := model.Account{}
+	entity := model.AccountPlatform{}
+	if res := tx.Where(&model.AccountPlatform{
+		PlatformID: u.PlatformId,
+		Type:       b.AccountPlatform.Type,
+	}).First(&entity); res.RowsAffected == 0 {
+		// 创建 account
+		accountEntity.UserName = b.AccountPlatform.Type + u.PlatformId
+		if res := tx.Save(&accountEntity); res.RowsAffected == 0 {
+			tx.Rollback()
+			return nil, status.Errorf(codes.Internal, "创建账号失败")
+		}
+
+		// 创建第三方账号
+		entity.AccountID = accountEntity.ID
+		entity.PlatformID = u.PlatformId
+		entity.Type = b.AccountPlatform.Type
+		if res := tx.Save(&entity); res.RowsAffected == 0 {
+			tx.Rollback()
+			return nil, status.Errorf(codes.Internal, "创建账号失败")
+		}
+
+		// 创建用户
+		ub := UserBusiness{
+			AccountId: accountEntity.ID,
+			Gender:    u.Gender,
+			Nickname:  u.Nickname,
+			Avatar:    u.Avatar,
+		}
+		if _, err := ub.Create(tx); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	}
+
+	b.Id = entity.AccountID
+	b.LoginMethod = b.AccountPlatform.Type
+
+	// 更新登陆后相关状态
+	if err := b.login(tx); err != nil {
+		tx.Rollback()
+		return nil, status.Errorf(codes.Internal, "更新失败")
+	}
+
+	accountEntity.ID = entity.AccountID
+	return &accountEntity, nil
+
 }
 
 func (b *AccountBusiness) login(tx *gorm.DB) error {

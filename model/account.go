@@ -20,10 +20,9 @@ type Account struct {
 
 type AccountPlatform struct {
 	IDModel
-	AccountID     int64  `gorm:"type:int(64);not null;comment:账号ID;index"`
-	PlatformID    string `gorm:"type:varchar(128);not null default '';comment:第三方平台id;index"`
-	PlatformToken string `gorm:"type:varchar(128);not null default '';comment:第三方平台access_token"`
-	Type          string `gorm:"type:varchar(64);not null default '';comment:类型"`
+	AccountID  int64  `gorm:"type:int(64);not null;comment:账号ID;index"`
+	PlatformID string `gorm:"type:varchar(128);not null default '';comment:第三方平台id;index:platform_id_type"`
+	Type       string `gorm:"type:varchar(64);not null default '';comment:类型;index:platform_id_type"`
 	DateModel
 }
 

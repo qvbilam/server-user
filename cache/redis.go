@@ -174,3 +174,15 @@ func (s *RedisServer) GetUserSpecialCodesCount() int64 {
 	res, _ := global.Redis.SCard(context.Background(), key).Result()
 	return res
 }
+
+func (s *RedisServer) SetOAuthQQToken(appId, token string, expire int) string {
+	key := RedisKey{}.GetOAuthQQTokenKey(appId)
+	result, _ := global.Redis.SetEX(context.Background(), key, token, time.Duration(expire)*time.Second).Result()
+	return result
+}
+
+func (s *RedisServer) GetOAuthQQToken(appId string) string {
+	key := RedisKey{}.GetOAuthQQTokenKey(appId)
+	result, _ := global.Redis.Get(context.Background(), key).Result()
+	return result
+}

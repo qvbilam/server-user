@@ -19,3 +19,11 @@ jwt:
   key: "Ep<4Iy#2Im~4Ab^8Px;6Oj.5Hi^8Yh)6"
   expire: 86400
   issuer: "qvbilam-user"
+oauth_qq_config:
+  app_id: "101840991"
+  app_secret: "39ddd38949c71f2767eac859e6b9bc9e"
+  uri: "https://blog.qvbilam.xin/oauth/qq"
+oauth_github_config:
+  app_id: "21ec1910656104b0f01c"
+  app_secret: "80cc2760b4f6e3ea51cee89657c83c6f5532af7b"
+  uri: "https://blog.qvbilam.xin/oauth/qq"

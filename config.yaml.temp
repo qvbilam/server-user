@@ -1,0 +1,29 @@
+name: "user"
+port: "9801"
+db:
+  host: "127.0.0.1"
+  port: 3306
+  user: "root"
+  password: "root"
+  database: "qvbilam_user"
+es:
+  host: "127.0.0.1"
+  port: 9200
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  user: ""
+  password: ""
+  database: 0
+jwt:
+  key: ""
+  expire: 86400
+  issuer: ""
+oauth_qq_config:
+  app_id: ""
+  app_secret: ""
+  uri: ""
+oauth_github_config:
+  app_id: ""
+  app_secret: ""
+  uri: ""
