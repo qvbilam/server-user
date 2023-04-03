@@ -28,9 +28,9 @@ type QQOpenIdResponses struct {
 type QQUserResponse struct {
 	Ret         int    `json:"ret"`
 	Msg         string `json:"msg"`
-	Nickname    string `json:"nickname"`
-	GanderType  string `json:"ganderType"` // 1女 2男
-	FigureurlQq string `json:"figureurl_qq"`
+	Nickname    string `json:"nickname"`     // 昵称
+	GanderType  string `json:"ganderType"`   // 1女 2男
+	FigureurlQq string `json:"figureurl_qq"` // qq 头像
 }
 
 func (b *OAuthQQBusiness) getToken(code string) (*QQTokenResponse, error) {

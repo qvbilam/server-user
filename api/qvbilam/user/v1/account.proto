@@ -62,10 +62,18 @@ message LoginPlatformRequest{
   string code = 2;
 }
 
+message BindPlatformRequest{
+  int64 userId = 1;
+  string type = 2;
+  string code = 3;
+}
+
 service Account {
   rpc Create (UpdateAccountRequest) returns (AccountResponse);
   rpc Update (UpdateAccountRequest) returns (google.protobuf.Empty);
   rpc LoginPassword (LoginPasswordRequest) returns (AccountResponse);
   rpc LoginMobile (LoginMobileRequest) returns (AccountResponse);
   rpc LoginPlatform(LoginPlatformRequest) returns (AccountResponse);
+  rpc BindPlatform(BindPlatformRequest) returns (google.protobuf.Empty);
+  rpc UnbindPlatform(BindPlatformRequest) returns (google.protobuf.Empty);
 }

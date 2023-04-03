@@ -1,7 +1,6 @@
 package business
 
 import (
-	"fmt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -152,7 +151,6 @@ func (b *AccountBusiness) getPlatformUser(code string) (*OAuthUserResponse, erro
 			Uri:        global.ServerConfig.OauthGithubConfig.Uri,
 		}
 		u = oauth.User(code)
-		return nil, status.Errorf(codes.Unimplemented, "暂不支持")
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "非法请求")
 	}
@@ -168,7 +166,7 @@ func (b *AccountBusiness) LoginPlatform(code string) (*model.Account, error) {
 	if err != nil {
 		return nil, err
 	}
-	if u == nil || u.PlatformId == "" {
+	if u == nil {
 		return nil, status.Errorf(codes.Internal, "第三方登陆失败")
 	}
 
@@ -218,6 +216,7 @@ func (b *AccountBusiness) LoginPlatform(code string) (*model.Account, error) {
 	}
 
 	accountEntity.ID = entity.AccountID
+	tx.Commit()
 	return &accountEntity, nil
 
 }
@@ -226,8 +225,6 @@ func (b *AccountBusiness) login(tx *gorm.DB) error {
 	if tx == nil {
 		tx = global.DB
 	}
-
-	fmt.Printf("id: %d", b.Id)
 
 	updates := map[string]interface{}{
 		"login_count":   gorm.Expr("login_count + ?", 1),

@@ -2,7 +2,7 @@ package business
 
 import (
 	"encoding/json"
-	"fmt"
+	"user/enum"
 	"user/utils"
 )
 
@@ -18,6 +18,12 @@ type GithubTokenResponse struct {
 	Bearer      string `json:"bearer"`
 }
 
+type GithubUserResponse struct {
+	Name      string `json:"name"`       // 昵称
+	Login     string `json:"login"`      // 账号
+	AvatarUrl string `json:"avatar_url"` // 头像
+}
+
 func (b *OAuthGitHubBusiness) getToken(code string) (string, error) {
 	requestUrl := "https://github.com/login/oauth/access_token"
 	params := map[string]interface{}{}
@@ -30,13 +36,10 @@ func (b *OAuthGitHubBusiness) getToken(code string) (string, error) {
 
 	res, err := utils.Post(requestUrl, params, headers)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	response := GithubTokenResponse{}
-
-	// {"access_token":"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","token_type":"bearer","scope":""}
-	//fmt.Println(string(res))
 
 	if err := json.Unmarshal(res, &response); err != nil {
 		return "", err
@@ -44,17 +47,21 @@ func (b *OAuthGitHubBusiness) getToken(code string) (string, error) {
 	return response.AccessToken, nil
 }
 
-func (b *OAuthGitHubBusiness) getUser(token string) {
+func (b *OAuthGitHubBusiness) getUser(token string) (*GithubUserResponse, error) {
 	requestUrl := "https://api.github.com/user"
 	headers := map[string]interface{}{}
-	headers["Authorization"] = "token " + token
+	headers["Authorization"] = "Bearer " + token
 	headers["Accept"] = "application/json"
-	res, err := utils.Post(requestUrl, nil, headers)
+	res, err := utils.Get(requestUrl, nil, headers)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
-	fmt.Println(string(res))
+	response := GithubUserResponse{}
+	if err := json.Unmarshal(res, &response); err != nil {
+		return nil, err
+	}
+	return &response, nil
 }
 
 func (b *OAuthGitHubBusiness) token(code string) (string, error) {
@@ -62,7 +69,21 @@ func (b *OAuthGitHubBusiness) token(code string) (string, error) {
 }
 
 func (b *OAuthGitHubBusiness) User(code string) *OAuthUserResponse {
-	token, _ := b.token(code)
-	b.getUser(token)
-	return nil
+	var user *GithubUserResponse
+	var token string
+	var err error
+	if token, err = b.token(code); err != nil {
+		return nil
+	}
+	if user, err = b.getUser(token); err != nil {
+		return nil
+	}
+
+	return &OAuthUserResponse{
+		Type:       enum.LoginMethodPlatformWGitHub,
+		PlatformId: user.Login,
+		Nickname:   user.Name,
+		Gender:     enum.GenderTypeMale,
+		Avatar:     user.AvatarUrl,
+	}
 }

@@ -26,7 +26,7 @@ func InitDatabase() {
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true, // 表名不带s
 		},
-		Logger: newLogger(),
+		//Logger: newLogger(),
 	})
 
 	if err != nil {
