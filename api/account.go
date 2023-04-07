@@ -13,6 +13,7 @@ type AccountService struct {
 	proto.UnimplementedAccountServer
 }
 
+// Create 创建账号
 func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccountRequest) (*proto.AccountResponse, error) {
 	b := business.AccountBusiness{
 		Mobile:   request.Mobile,
@@ -34,10 +35,12 @@ func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccoun
 	return &proto.AccountResponse{Id: entity.ID}, nil
 }
 
+// Update 更新账号
 func (s *AccountService) Update(ctx context.Context, request *proto.UpdateAccountRequest) (*emptypb.Empty, error) {
 	return nil, nil
 }
 
+// LoginPassword 密码登陆
 func (s *AccountService) LoginPassword(ctx context.Context, request *proto.LoginPasswordRequest) (*proto.AccountResponse, error) {
 	b := business.AccountBusiness{
 		UserName:    request.Username,
@@ -56,6 +59,7 @@ func (s *AccountService) LoginPassword(ctx context.Context, request *proto.Login
 	return s.loginResponse(entity)
 }
 
+// LoginSmsCode 短信登陆
 func (s *AccountService) LoginSmsCode(ctx context.Context, request *proto.LoginMobileRequest) (*proto.AccountResponse, error) {
 	b := business.AccountBusiness{
 		Mobile:      request.Mobile,
@@ -70,6 +74,7 @@ func (s *AccountService) LoginSmsCode(ctx context.Context, request *proto.LoginM
 	return s.loginResponse(entity)
 }
 
+// LoginPlatform 平台登陆
 func (s *AccountService) LoginPlatform(ctx context.Context, request *proto.LoginPlatformRequest) (*proto.AccountResponse, error) {
 	b := business.AccountBusiness{
 		AccountPlatform: &business.AccountPlatform{
@@ -81,6 +86,34 @@ func (s *AccountService) LoginPlatform(ctx context.Context, request *proto.Login
 		return nil, err
 	}
 	return s.loginResponse(entity)
+}
+
+// BindPlatform 绑定平台账号
+func (s *AccountService) BindPlatform(ctx context.Context, request *proto.BindPlatformRequest) (*emptypb.Empty, error) {
+	ub := business.UserBusiness{Id: request.UserId}
+	user, err := ub.GetDetail()
+	if err != nil {
+		return nil, err
+	}
+	b := business.AccountBusiness{Id: user.AccountId}
+	if err := b.BlindPlatform(request.Code); err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
+// UnbindPlatform 取消绑定账号
+func (s *AccountService) UnbindPlatform(ctx context.Context, request *proto.BindPlatformRequest) (*emptypb.Empty, error) {
+	ub := business.UserBusiness{Id: request.UserId}
+	user, err := ub.GetDetail()
+	if err != nil {
+		return nil, err
+	}
+	b := business.AccountBusiness{Id: user.AccountId}
+	if err := b.UnBlindPlatform(); err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 func (s *AccountService) loginResponse(entity *model.Account) (*proto.AccountResponse, error) {

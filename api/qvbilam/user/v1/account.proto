@@ -69,11 +69,11 @@ message BindPlatformRequest{
 }
 
 service Account {
-  rpc Create (UpdateAccountRequest) returns (AccountResponse);
-  rpc Update (UpdateAccountRequest) returns (google.protobuf.Empty);
-  rpc LoginPassword (LoginPasswordRequest) returns (AccountResponse);
-  rpc LoginMobile (LoginMobileRequest) returns (AccountResponse);
-  rpc LoginPlatform(LoginPlatformRequest) returns (AccountResponse);
-  rpc BindPlatform(BindPlatformRequest) returns (google.protobuf.Empty);
-  rpc UnbindPlatform(BindPlatformRequest) returns (google.protobuf.Empty);
+  rpc Create (UpdateAccountRequest) returns (AccountResponse); // 创建账号
+  rpc Update (UpdateAccountRequest) returns (google.protobuf.Empty); // 修改账号
+  rpc LoginPassword (LoginPasswordRequest) returns (AccountResponse); // 密码登陆
+  rpc LoginMobile (LoginMobileRequest) returns (AccountResponse); // 手机号登陆
+  rpc LoginPlatform(LoginPlatformRequest) returns (AccountResponse); // 平台登陆
+  rpc BindPlatform(BindPlatformRequest) returns (google.protobuf.Empty); // 绑定平台
+  rpc UnbindPlatform(BindPlatformRequest) returns (google.protobuf.Empty); // 取消绑定平台
 }

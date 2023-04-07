@@ -33,6 +33,7 @@ func (s *UserService) Create(ctx context.Context, request *proto.UpdateRequest) 
 	return &proto.UserResponse{Id: entity.ID}, nil
 }
 
+// Update 更新用户信息
 func (s *UserService) Update(ctx context.Context, request *proto.UpdateRequest) (*emptypb.Empty, error) {
 	fmt.Println("更新用户")
 
@@ -51,6 +52,7 @@ func (s *UserService) Update(ctx context.Context, request *proto.UpdateRequest) 
 	return &emptypb.Empty{}, nil
 }
 
+// Delete 注销用户
 func (s *UserService) Delete(ctx context.Context, request *proto.UpdateRequest) (*emptypb.Empty, error) {
 	fmt.Println("注销用户")
 
@@ -85,6 +87,7 @@ func (s *UserService) Detail(ctx context.Context, request *proto.GetUserRequest)
 	return res, nil
 }
 
+// Search 搜索用户
 func (s *UserService) Search(ctx context.Context, request *proto.SearchRequest) (*proto.UsersResponse, error) {
 	b := business.UserBusiness{
 		Keyword:   request.Keyword,
@@ -107,6 +110,7 @@ func (s *UserService) Search(ctx context.Context, request *proto.SearchRequest) 
 	return res, nil
 }
 
+// List 用户列表
 func (s *UserService) List(ctx context.Context, request *proto.SearchRequest) (*proto.UsersResponse, error) {
 	fmt.Println("获取用户列表")
 	b := business.UserBusiness{
@@ -147,6 +151,7 @@ func (s *UserService) List(ctx context.Context, request *proto.SearchRequest) (*
 //	return userEntityToResponse(entity), nil
 //}
 
+// LevelExp 等级经验
 func (s *UserService) LevelExp(ctx context.Context, request *proto.LevelExpRequest) (*proto.LevelExpResponse, error) {
 	b := business.LevelBusiness{
 		UserID:       request.UserId,

@@ -28,6 +28,8 @@ type AccountClient interface {
 	LoginPassword(ctx context.Context, in *LoginPasswordRequest, opts ...grpc.CallOption) (*AccountResponse, error)
 	LoginMobile(ctx context.Context, in *LoginMobileRequest, opts ...grpc.CallOption) (*AccountResponse, error)
 	LoginPlatform(ctx context.Context, in *LoginPlatformRequest, opts ...grpc.CallOption) (*AccountResponse, error)
+	BindPlatform(ctx context.Context, in *BindPlatformRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UnbindPlatform(ctx context.Context, in *BindPlatformRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type accountClient struct {
@@ -83,6 +85,24 @@ func (c *accountClient) LoginPlatform(ctx context.Context, in *LoginPlatformRequ
 	return out, nil
 }
 
+func (c *accountClient) BindPlatform(ctx context.Context, in *BindPlatformRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/userPb.v1.Account/BindPlatform", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UnbindPlatform(ctx context.Context, in *BindPlatformRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/userPb.v1.Account/UnbindPlatform", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServer is the server API for Account service.
 // All implementations must embed UnimplementedAccountServer
 // for forward compatibility
@@ -92,6 +112,8 @@ type AccountServer interface {
 	LoginPassword(context.Context, *LoginPasswordRequest) (*AccountResponse, error)
 	LoginMobile(context.Context, *LoginMobileRequest) (*AccountResponse, error)
 	LoginPlatform(context.Context, *LoginPlatformRequest) (*AccountResponse, error)
+	BindPlatform(context.Context, *BindPlatformRequest) (*emptypb.Empty, error)
+	UnbindPlatform(context.Context, *BindPlatformRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -113,6 +135,12 @@ func (UnimplementedAccountServer) LoginMobile(context.Context, *LoginMobileReque
 }
 func (UnimplementedAccountServer) LoginPlatform(context.Context, *LoginPlatformRequest) (*AccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginPlatform not implemented")
+}
+func (UnimplementedAccountServer) BindPlatform(context.Context, *BindPlatformRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BindPlatform not implemented")
+}
+func (UnimplementedAccountServer) UnbindPlatform(context.Context, *BindPlatformRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnbindPlatform not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
 
@@ -217,6 +245,42 @@ func _Account_LoginPlatform_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Account_BindPlatform_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BindPlatformRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).BindPlatform(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userPb.v1.Account/BindPlatform",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).BindPlatform(ctx, req.(*BindPlatformRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UnbindPlatform_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BindPlatformRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UnbindPlatform(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userPb.v1.Account/UnbindPlatform",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UnbindPlatform(ctx, req.(*BindPlatformRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Account_ServiceDesc is the grpc.ServiceDesc for Account service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -243,6 +307,14 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoginPlatform",
 			Handler:    _Account_LoginPlatform_Handler,
+		},
+		{
+			MethodName: "BindPlatform",
+			Handler:    _Account_BindPlatform_Handler,
+		},
+		{
+			MethodName: "UnbindPlatform",
+			Handler:    _Account_UnbindPlatform_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

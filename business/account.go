@@ -63,6 +63,10 @@ func (b *AccountBusiness) Create() (*model.Account, error) {
 	return &m, nil
 }
 
+func (b *AccountBusiness) Update() (*model.Account, error) {
+	return nil, nil
+}
+
 func (b *AccountBusiness) LoginPassword() (*model.Account, error) {
 	entity, condition := model.Account{}, model.Account{}
 	switch b.LoginMethod {
@@ -236,6 +240,72 @@ func (b *AccountBusiness) login(tx *gorm.DB) error {
 		return status.Errorf(codes.Internal, "更新失败")
 	}
 	// todo 新增账户日志
+
+	return nil
+}
+
+func (b *AccountBusiness) BlindPlatform(code string) error {
+	if b.Id == 0 {
+		return status.Errorf(codes.InvalidArgument, "参数错误")
+	}
+
+	if b.AccountPlatform.Type == "" || code == "" {
+		return status.Errorf(codes.Internal, "第三方登陆参数错误")
+	}
+
+	// 验证是否绑定
+	entity := model.AccountPlatform{}
+	if res := global.DB.Where(&model.AccountPlatform{
+		AccountID: b.Id,
+		Type:      b.AccountPlatform.Type,
+	}).First(&entity); res.RowsAffected == 1 {
+		return status.Errorf(codes.AlreadyExists, "已绑定当前平台登录账号")
+	}
+
+	// 登陆
+	u, err := b.getPlatformUser(code)
+	if err != nil {
+		return err
+	}
+	if u == nil {
+		return status.Errorf(codes.Internal, "第三方登陆失败")
+	}
+
+	// 绑定
+	if res := global.DB.Save(&model.AccountPlatform{
+		AccountID:  b.Id,
+		PlatformID: u.PlatformId,
+		Type:       u.Type,
+	}); res.RowsAffected == 0 {
+		return status.Errorf(codes.Internal, "绑定失败")
+	}
+
+	return nil
+}
+
+func (b *AccountBusiness) UnBlindPlatform() error {
+	accountEntity := model.Account{}
+	global.DB.Where(&model.Account{IDModel: model.IDModel{ID: b.Id}}).First(&accountEntity)
+	if accountEntity.Mobile == "" || accountEntity.Email == "" {
+		return status.Errorf(codes.InvalidArgument, "请先绑定手机号或邮箱")
+	}
+
+	entity := model.AccountPlatform{}
+	if res := global.DB.Where(&model.AccountPlatform{
+		AccountID: b.Id,
+		Type:      b.AccountPlatform.Type,
+	}).First(&entity); res.RowsAffected == 0 {
+		return status.Errorf(codes.NotFound, "未绑定平台账号")
+	}
+
+	if entity.AccountID != 0 {
+		entity.OriginAccountID = entity.AccountID
+	}
+	entity.AccountID = 0
+
+	if res := global.DB.Save(&entity); res.RowsAffected == 0 {
+		return status.Errorf(codes.Internal, "解绑失败")
+	}
 
 	return nil
 }
