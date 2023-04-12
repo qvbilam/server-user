@@ -93,6 +93,7 @@ func (b *AccountBusiness) Update() (*model.Account, error) {
 	}
 
 	tx.Save(&entity)
+	tx.Commit()
 
 	return &entity, nil
 }

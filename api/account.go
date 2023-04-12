@@ -63,7 +63,7 @@ func (s *AccountService) Update(ctx context.Context, request *proto.UpdateAccoun
 		return nil, err
 	}
 
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }
 
 // LoginPassword 密码登陆
