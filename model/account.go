@@ -6,7 +6,7 @@ import (
 
 type Account struct {
 	IDModel
-	UserName    string `gorm:"type:varchar(64);not null default '';comment:登陆账号;index"`
+	Username    string `gorm:"type:varchar(64);not null default '';comment:登陆账号;index"`
 	Email       string `gorm:"type:varchar(64);not null default '';comment:邮箱;index"`
 	Mobile      string `gorm:"type:varchar(11);not null default '';comment:手机号;index"`
 	Password    string `gorm:"type:varchar(128);not null default '';comment:登陆密码"`
@@ -35,6 +35,6 @@ type AccountLog struct {
 	Client    string `gorm:"type:varchar(128);not null default '';comment:客户端web,iOS,Android"`
 	Version   string `gorm:"type:varchar(128);not null default '';comment:应用版本"`
 	Device    string `gorm:"type:varchar(128);not null default '';comment:设备"`
-	Ip        string `gorm:"type:varchar(128);not null default '';comment:设备"`
+	Ip        string `gorm:"type:varchar(128);not null default '';comment:ip"`
 	DateModel
 }

@@ -30,5 +30,6 @@ func main() {
 		&model.LevelExpLog{},
 		&model.AccountPlatform{},
 		&model.Account{},
+		&model.AccountLog{},
 	)
 }

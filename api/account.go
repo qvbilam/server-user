@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	proto "user/api/qvbilam/user/v1"
 	"user/business"
@@ -37,13 +39,37 @@ func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccoun
 
 // Update 更新账号
 func (s *AccountService) Update(ctx context.Context, request *proto.UpdateAccountRequest) (*emptypb.Empty, error) {
+	if request.Id == 0 {
+		if request.UserId == 0 {
+			return nil, status.Errorf(codes.InvalidArgument, "参数错误")
+		}
+		ub := business.UserBusiness{Id: request.UserId}
+		user, err := ub.GetDetail()
+		if err != nil {
+			return nil, err
+		}
+		request.Id = user.AccountId
+	}
+
+	b := business.AccountBusiness{
+		Id:       request.Id,
+		Username: request.Username,
+		Mobile:   request.Mobile,
+		Email:    request.Email,
+		Password: request.Password,
+	}
+
+	if _, err := b.Update(); err != nil {
+		return nil, err
+	}
+
 	return nil, nil
 }
 
 // LoginPassword 密码登陆
 func (s *AccountService) LoginPassword(ctx context.Context, request *proto.LoginPasswordRequest) (*proto.AccountResponse, error) {
 	b := business.AccountBusiness{
-		UserName:    request.Username,
+		Username:    request.Username,
 		Mobile:      request.Mobile,
 		Email:       request.Email,
 		Password:    request.Password,
@@ -132,7 +158,7 @@ func (s *AccountService) loginResponse(entity *model.Account) (*proto.AccountRes
 
 	return &proto.AccountResponse{
 		Token:    GenerateUserToken(&userRes),
-		UserName: entity.UserName,
+		Username: entity.Username,
 		Mobile:   entity.Mobile,
 		Email:    entity.Email,
 		User:     &userRes,

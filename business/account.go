@@ -19,7 +19,7 @@ type AccountPlatform struct {
 
 type AccountBusiness struct {
 	Id              int64
-	UserName        string
+	Username        string
 	Mobile          string
 	Email           string
 	Password        string
@@ -64,7 +64,37 @@ func (b *AccountBusiness) Create() (*model.Account, error) {
 }
 
 func (b *AccountBusiness) Update() (*model.Account, error) {
-	return nil, nil
+	entity := model.Account{}
+	tx := global.DB.Begin()
+	if res := tx.Where(&model.Account{IDModel: model.IDModel{ID: b.Id}}).First(&entity); res.RowsAffected == 0 {
+		return nil, status.Errorf(codes.NotFound, "账号不存在")
+	}
+
+	if (b.Username != "") && (b.Username != entity.Username) {
+		if b.ExistsUserName(tx) {
+			return nil, status.Errorf(codes.AlreadyExists, "账号已存在")
+		}
+		entity.Username = b.Username
+	}
+	if (b.Mobile != "") && (b.Mobile != entity.Mobile) {
+		if b.ExistsMobile(tx) {
+			return nil, status.Errorf(codes.AlreadyExists, "手机号已注册")
+		}
+		entity.Mobile = b.Mobile
+	}
+	if (b.Email != "") && (b.Email != entity.Email) {
+		if b.ExistsEmail(tx) {
+			return nil, status.Errorf(codes.AlreadyExists, "邮箱已注册")
+		}
+		entity.Email = b.Email
+	}
+	if b.Password != "" {
+		entity.Password = utils.GeneratePassword(b.Password)
+	}
+
+	tx.Save(&entity)
+
+	return &entity, nil
 }
 
 func (b *AccountBusiness) LoginPassword() (*model.Account, error) {
@@ -81,10 +111,10 @@ func (b *AccountBusiness) LoginPassword() (*model.Account, error) {
 		}
 		condition.Email = b.Email
 	case enum.LoginMethodUserName:
-		if b.UserName == "" {
+		if b.Username == "" {
 			return nil, status.Errorf(codes.InvalidArgument, "请输入账号")
 		}
-		condition.UserName = b.UserName
+		condition.Username = b.Username
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "非法请求")
 	}
@@ -182,7 +212,7 @@ func (b *AccountBusiness) LoginPlatform(code string) (*model.Account, error) {
 		Type:       b.AccountPlatform.Type,
 	}).First(&entity); res.RowsAffected == 0 {
 		// 创建 account
-		accountEntity.UserName = b.AccountPlatform.Type + u.PlatformId
+		accountEntity.Username = b.AccountPlatform.Type + u.PlatformId
 		if res := tx.Save(&accountEntity); res.RowsAffected == 0 {
 			tx.Rollback()
 			return nil, status.Errorf(codes.Internal, "创建账号失败")
@@ -253,14 +283,20 @@ func (b *AccountBusiness) BlindPlatform(code string) error {
 		return status.Errorf(codes.Internal, "第三方登陆参数错误")
 	}
 
+	tx := global.DB.Begin()
+
 	// 验证是否绑定
-	entity := model.AccountPlatform{}
-	if res := global.DB.Where(&model.AccountPlatform{
-		AccountID: b.Id,
-		Type:      b.AccountPlatform.Type,
-	}).First(&entity); res.RowsAffected == 1 {
+	if b.ExistsPlatform(tx) {
 		return status.Errorf(codes.AlreadyExists, "已绑定当前平台登录账号")
 	}
+	//b.existsPlatform(tx)
+	//entity := model.AccountPlatform{}
+	//if res := global.DB.Where(&model.AccountPlatform{
+	//	AccountID: b.Id,
+	//	Type:      b.AccountPlatform.Type,
+	//}).First(&entity); res.RowsAffected == 1 {
+	//	return status.Errorf(codes.AlreadyExists, "已绑定当前平台登录账号")
+	//}
 
 	// 登陆
 	u, err := b.getPlatformUser(code)
@@ -272,7 +308,7 @@ func (b *AccountBusiness) BlindPlatform(code string) error {
 	}
 
 	// 绑定
-	if res := global.DB.Save(&model.AccountPlatform{
+	if res := tx.Save(&model.AccountPlatform{
 		AccountID:  b.Id,
 		PlatformID: u.PlatformId,
 		Type:       u.Type,
@@ -331,13 +367,16 @@ func (b *AccountBusiness) ExistsEmail(tx *gorm.DB) bool {
 		return true
 	}
 
-	if res := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where(&model.Account{Email: b.Email}).Select("email").First(&model.Account{}); res.RowsAffected == 0 {
+	if res := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+		Where(&model.Account{Email: b.Email}).
+		Select("email").
+		First(&model.Account{}); res.RowsAffected == 0 {
 		return false
 	}
 	return true
 }
 
-func (b *AccountBusiness) existsPlatform(tx *gorm.DB) bool {
+func (b *AccountBusiness) ExistsPlatform(tx *gorm.DB) bool {
 	if tx == nil {
 		tx = global.DB
 	}
@@ -349,6 +388,23 @@ func (b *AccountBusiness) existsPlatform(tx *gorm.DB) bool {
 		PlatformID: b.AccountPlatform.PlatformID,
 		Type:       b.AccountPlatform.Type,
 	}).Select("id").First(&AccountPlatform{}); res.RowsAffected == 0 {
+		return false
+	}
+	return true
+}
+
+func (b *AccountBusiness) ExistsUserName(tx *gorm.DB) bool {
+	if tx == nil {
+		tx = global.DB
+	}
+	if b.Username == "" {
+		return true
+	}
+
+	if res := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+		Where(&model.Account{Username: b.Username}).
+		Select("username").
+		First(&model.Account{}); res.RowsAffected == 0 {
 		return false
 	}
 	return true

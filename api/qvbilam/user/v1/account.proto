@@ -6,7 +6,7 @@ option go_package="user/api/qvbilam/user/v1/userPb;v1";
 
 message AccountResponse {
   int64 id = 1;
-  string userName = 2;
+  string username = 2;
   string mobile = 3;
   string email = 4;
   string createdIP = 5;
@@ -25,12 +25,14 @@ message UpdateAccountPlatformRequest {
 }
 
 message UpdateAccountRequest {
-  int64 id = 1;
-  string mobile = 2;
-  string email = 3;
-  string password = 4;
-  string ip = 5;
-  UpdateAccountPlatformRequest accountPlatform = 6;
+  int64 id = 1; // 通过账号id 或者 用户id 修改
+  int64 userId = 2;
+  string username = 3;
+  string mobile = 4;
+  string email = 5;
+  string password = 6;
+  string ip = 7;
+  UpdateAccountPlatformRequest accountPlatform = 8;
 }
 
 message DeviceRequest{
@@ -60,6 +62,7 @@ message LoginMobileRequest{
 message LoginPlatformRequest{
   string type = 1;
   string code = 2;
+  string ip = 3;
 }
 
 message BindPlatformRequest{
