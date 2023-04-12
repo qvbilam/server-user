@@ -22,6 +22,11 @@ func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccoun
 		Email:    request.Email,
 		Password: request.Password,
 		Ip:       request.Ip,
+		AccountDevice: &business.AccountDevice{
+			Version: request.Device.Version,
+			Client:  request.Device.Client,
+			Device:  request.Device.Device,
+		},
 	}
 	// 创建账号
 	entity, err := b.Create()
@@ -75,7 +80,13 @@ func (s *AccountService) LoginPassword(ctx context.Context, request *proto.Login
 		Password:    request.Password,
 		Ip:          request.Ip,
 		LoginMethod: request.Method,
+		AccountDevice: &business.AccountDevice{
+			Version: request.Device.Version,
+			Client:  request.Device.Client,
+			Device:  request.Device.Device,
+		},
 	}
+
 	// 账号信息
 	entity, err := b.LoginPassword()
 	if err != nil {
@@ -91,6 +102,11 @@ func (s *AccountService) LoginSmsCode(ctx context.Context, request *proto.LoginM
 		Mobile:      request.Mobile,
 		Ip:          request.Ip,
 		LoginMethod: enum.LoginMethodSms,
+		AccountDevice: &business.AccountDevice{
+			Version: request.Device.Version,
+			Client:  request.Device.Client,
+			Device:  request.Device.Device,
+		},
 	}
 	entity, err := b.LoginMobileCode()
 	if err != nil {
@@ -105,6 +121,11 @@ func (s *AccountService) LoginPlatform(ctx context.Context, request *proto.Login
 	b := business.AccountBusiness{
 		AccountPlatform: &business.AccountPlatform{
 			Type: request.Type,
+		},
+		AccountDevice: &business.AccountDevice{
+			Version: "",
+			Client:  "",
+			Device:  "",
 		},
 	}
 	entity, err := b.LoginPlatform(request.Code)

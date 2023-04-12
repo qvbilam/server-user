@@ -33,6 +33,7 @@ message UpdateAccountRequest {
   string password = 6;
   string ip = 7;
   UpdateAccountPlatformRequest accountPlatform = 8;
+  DeviceRequest device = 9;
 }
 
 message DeviceRequest{

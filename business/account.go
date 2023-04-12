@@ -16,6 +16,11 @@ type AccountPlatform struct {
 	PlatformID string
 	Type       string
 }
+type AccountDevice struct {
+	Version string
+	Client  string
+	Device  string
+}
 
 type AccountBusiness struct {
 	Id              int64
@@ -27,6 +32,7 @@ type AccountBusiness struct {
 	LoginMethod     string
 	Code            string
 	AccountPlatform *AccountPlatform
+	AccountDevice   *AccountDevice
 }
 
 func (b *AccountBusiness) Create() (*model.Account, error) {
@@ -58,6 +64,9 @@ func (b *AccountBusiness) Create() (*model.Account, error) {
 		tx.Rollback()
 		return nil, status.Errorf(codes.Internal, "创建账号失败")
 	}
+
+	b.Id = m.ID
+	b.accountLog(tx, enum.AccountTypeSignin)
 
 	tx.Commit()
 	return &m, nil
@@ -270,8 +279,8 @@ func (b *AccountBusiness) login(tx *gorm.DB) error {
 	if res := tx.Model(model.Account{}).Where(model.Account{IDModel: model.IDModel{ID: b.Id}}).Updates(updates); res.Error != nil || res.RowsAffected == 0 {
 		return status.Errorf(codes.Internal, "更新失败")
 	}
-	// todo 新增账户日志
-
+	// 新增账户日志
+	b.accountLog(tx, enum.AccountTypeLogin)
 	return nil
 }
 
@@ -408,5 +417,30 @@ func (b *AccountBusiness) ExistsUserName(tx *gorm.DB) bool {
 		First(&model.Account{}); res.RowsAffected == 0 {
 		return false
 	}
+	return true
+}
+
+func (b *AccountBusiness) accountLog(tx *gorm.DB, accountType string) bool {
+	client, version, device := "", "", ""
+	if b.AccountDevice != nil {
+		client = b.AccountDevice.Client
+		version = b.AccountDevice.Version
+		device = b.AccountDevice.Device
+	}
+
+	entity := model.AccountLog{
+		AccountId: b.Id,
+		Type:      accountType,
+		Method:    b.LoginMethod,
+		Client:    client,
+		Version:   version,
+		Device:    device,
+		Ip:        b.Ip,
+	}
+
+	if res := tx.Save(&entity); res.RowsAffected == 0 {
+		return false
+	}
+
 	return true
 }

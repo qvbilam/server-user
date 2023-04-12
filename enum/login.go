@@ -1,5 +1,10 @@
 package enum
 
+const AccountTypeSignin = "signin"   // 注册
+const AccountTypeSignout = "signout" // 注销
+const AccountTypeLogin = "login"     // 登陆
+const AccountTypeLogout = "logout"   // 登陆
+
 const LoginMethodSms = "sms" // 短信登陆方式
 
 // ============== 密码登陆
