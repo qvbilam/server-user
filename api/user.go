@@ -127,30 +127,6 @@ func (s *UserService) List(ctx context.Context, request *proto.SearchRequest) (*
 	return res, nil
 }
 
-//func (s *UserService) Login(ctx context.Context, request *proto.LoginRequest) (*proto.UserResponse, error) {
-//	fmt.Println("登陆")
-//	b := business.AccountBusiness{
-//		Id:              0,
-//		UserName:        "",
-//		Mobile:          "",
-//		Email:           "",
-//		Password:        "",
-//		Ip:              "",
-//		LoginMethod:     "",
-//		AccountPlatform: nil,
-//	}
-//
-//	b := business.UserBusiness{Mobile: request.Mobile}
-//	entity, err := b.GetByMobile()
-//	if err != nil {
-//		return nil, err
-//	}
-//	if check := utils.CheckPassword(request.Password, entity.Password); check == false {
-//		return nil, status.Error(codes.InvalidArgument, "密码错误")
-//	}
-//	return userEntityToResponse(entity), nil
-//}
-
 // LevelExp 等级经验
 func (s *UserService) LevelExp(ctx context.Context, request *proto.LevelExpRequest) (*proto.LevelExpResponse, error) {
 	b := business.LevelBusiness{
@@ -158,6 +134,7 @@ func (s *UserService) LevelExp(ctx context.Context, request *proto.LevelExpReque
 		Exp:          request.Exp,
 		BusinessType: request.BusinessType,
 		BusinessID:   request.BusinessId,
+		Desc:         request.Desc,
 	}
 	isUpgrade, level, err := b.LevelExp()
 	if err != nil {

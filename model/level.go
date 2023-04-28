@@ -18,5 +18,6 @@ type LevelExpLog struct {
 	LevelAfter   int64  `gorm:"type:int;not null default 0;comment:变更后等级"`
 	BusinessType string `gorm:"type:varchar(20); not null default '';comment:业务类型"`
 	BusinessID   int64  `gorm:"type:int;not null default 0;comment:业务id"`
+	Desc         string `gorm:"type:varchar(64); not null default '';comment:说明"`
 	DateModel
 }

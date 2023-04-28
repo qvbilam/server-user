@@ -70,6 +70,7 @@ message LevelExpRequest {
   int64 exp = 2;
   string businessType = 3;
   int64 businessId = 4;
+  string desc = 5;
 }
 
 message LevelExpResponse{

@@ -12,6 +12,7 @@ type LevelBusiness struct {
 	Exp          int64
 	BusinessType string
 	BusinessID   int64
+	Desc         string
 }
 
 func (b *LevelBusiness) LevelExp() (bool, *model.Level, error) {
@@ -53,6 +54,7 @@ func (b *LevelBusiness) LevelExp() (bool, *model.Level, error) {
 		LevelAfter:   userLevel,
 		BusinessType: b.BusinessType,
 		BusinessID:   b.BusinessID,
+		Desc:         b.Desc,
 	}
 	if res := tx.Save(&log); res.RowsAffected == 0 {
 		tx.Rollback()
