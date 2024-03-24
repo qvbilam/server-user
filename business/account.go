@@ -130,7 +130,7 @@ func (b *AccountBusiness) LoginPassword() (*model.Account, error) {
 	}
 
 	tx := global.DB.Begin()
-	if res := tx.Where(condition).Preload("id, password").First(&entity); res.RowsAffected == 0 {
+	if res := tx.Where(condition).Select("id, password").First(&entity); res.RowsAffected == 0 {
 		tx.Rollback()
 		return nil, status.Errorf(codes.NotFound, "账号不存在")
 	}

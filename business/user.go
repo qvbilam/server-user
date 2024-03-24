@@ -63,6 +63,7 @@ func (b *UserBusiness) Create(tx *gorm.DB) (*model.User, error) {
 	userCode, err := ucB.RandomCode(false)
 	if err != nil {
 		log.Printf("生成用户code失败: %v\n", err)
+		tx.Rollback()
 		return nil, status.Errorf(codes.Internal, "创建用户异常")
 	}
 	if userCode == 0 {

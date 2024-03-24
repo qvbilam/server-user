@@ -5,15 +5,19 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"user/global"
+	"user/initialize"
 	"user/model"
 )
 
 func main() {
-	user := "root"
-	password := "root"
-	host := "127.0.0.1"
-	port := 3306
-	database := "qvbilam_user"
+	initialize.InitConfig()
+
+	user := global.ServerConfig.DBConfig.User
+	password := global.ServerConfig.DBConfig.Password
+	host := global.ServerConfig.DBConfig.Host
+	port := global.ServerConfig.DBConfig.Port
+	database := global.ServerConfig.DBConfig.Database
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, port, database)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
