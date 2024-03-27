@@ -1,5 +1,4 @@
-# 定义第一步用来编译的环境(使用alpine镜像)
-FROM golang:1.18-alpine AS go-alpine-builder
+FROM golang:1.20.14-alpine AS go-alpine-builder
 # 拷贝代码
 COPY . /go/src/user
 # 设置工作目录

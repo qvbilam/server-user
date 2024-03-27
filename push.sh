@@ -2,8 +2,8 @@
 # shellcheck disable=SC2086
 
 tag=$1
-imageName=qvbilam/user-server-alpine
-originImageName=registry.cn-hangzhou.aliyuncs.com/qvbilam/user-server
+imageName=qvbilam/api-server-user-alpine
+originImageName=registry.cn-hangzhou.aliyuncs.com/qvbilam/api-server-user
 
 # build image
 docker build -t ${imageName} .

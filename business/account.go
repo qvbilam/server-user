@@ -68,6 +68,13 @@ func (b *AccountBusiness) Create() (*model.Account, error) {
 	b.Id = m.ID
 	b.accountLog(tx, enum.AccountTypeSignin)
 
+	// 创建默认用户信息
+	ub := UserBusiness{AccountId: m.ID}
+	if _, err := ub.Create(tx); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
 	tx.Commit()
 	return &m, nil
 }

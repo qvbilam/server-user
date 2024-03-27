@@ -33,11 +33,6 @@ func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccoun
 	if err != nil {
 		return nil, err
 	}
-	// 创建默认用户信息
-	ub := business.UserBusiness{AccountId: entity.ID}
-	if _, err := ub.Create(nil); err != nil {
-		return nil, err
-	}
 
 	return &proto.AccountResponse{Id: entity.ID}, nil
 }

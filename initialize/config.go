@@ -20,8 +20,8 @@ func initEnvConfig() {
 	serverPort, _ := strconv.Atoi(os.Getenv("PORT"))
 	dbPort, _ := strconv.Atoi(os.Getenv("DB_PORT"))
 	esPort, _ := strconv.Atoi(os.Getenv("ES_PORT"))
-	redisPort, _ := strconv.Atoi(os.Getenv("REDIS_HOST"))
-	redisDb, _ := strconv.Atoi(os.Getenv("REDIS_PASSWORD"))
+	redisPort, _ := strconv.Atoi(os.Getenv("REDIS_PORT"))
+	redisDb, _ := strconv.Atoi(os.Getenv("REDIS_DATABASE"))
 	jwtExpire, _ := strconv.Atoi(os.Getenv("JWT_EXPIRE"))
 
 	if global.ServerConfig == nil {
@@ -30,12 +30,12 @@ func initEnvConfig() {
 
 	global.ServerConfig.Name = os.Getenv("SERVER_NAME")
 	global.ServerConfig.Port = serverPort
-	global.ServerConfig.DBConfig.Host = os.Getenv("DB_HOST")
 
 	global.ServerConfig.JWTConfig.SigningKey = os.Getenv("JWT_KEY")
 	global.ServerConfig.JWTConfig.Issuer = os.Getenv("JWT_ISSUER")
 	global.ServerConfig.JWTConfig.Expire = int64(jwtExpire)
 
+	global.ServerConfig.DBConfig.Host = os.Getenv("DB_HOST")
 	global.ServerConfig.DBConfig.Port = dbPort
 	global.ServerConfig.DBConfig.User = os.Getenv("DB_USER")
 	global.ServerConfig.DBConfig.Password = os.Getenv("DB_PASSWORD")
