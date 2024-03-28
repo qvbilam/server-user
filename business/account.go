@@ -1,6 +1,8 @@
 package business
 
 import (
+	"context"
+	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -23,6 +25,7 @@ type AccountDevice struct {
 }
 
 type AccountBusiness struct {
+	Ctx             context.Context
 	Id              int64
 	Username        string
 	Mobile          string
@@ -36,46 +39,74 @@ type AccountBusiness struct {
 }
 
 func (b *AccountBusiness) Create() (*model.Account, error) {
+	parentSpan := opentracing.SpanFromContext(b.Ctx)
+	spanCheckMobile := opentracing.GlobalTracer().StartSpan("checkMobileExists", opentracing.ChildOf(parentSpan.Context()))
+	spanSqlBegin := opentracing.GlobalTracer().StartSpan("sqlBegin", opentracing.ChildOf(parentSpan.Context()))
+
 	tx := global.DB.Begin()
 	m := model.Account{Mobile: b.Mobile}
 	// 验证手机号
-	if b.ExistsMobile(tx) {
+
+	existsMobile := b.ExistsMobile(tx)
+	spanCheckMobile.Finish()
+
+	if existsMobile {
 		tx.Rollback()
+		spanSqlBegin.Finish()
 		return nil, status.Errorf(codes.AlreadyExists, "手机号已存在")
 	}
 
 	// 验证邮箱
 	if b.Email != "" {
+		spanCheckEmail := opentracing.GlobalTracer().StartSpan("checkEmailExists", opentracing.ChildOf(parentSpan.Context()))
 		m.Email = b.Email
-		if b.ExistsEmail(tx) {
+		existsEmail := b.ExistsEmail(tx)
+		spanCheckEmail.Finish()
+		if existsEmail {
 			tx.Rollback()
+			spanSqlBegin.Finish()
 			return nil, status.Errorf(codes.AlreadyExists, "邮箱已存在")
 		}
 	}
 
 	// 密码
 	if b.Password != "" {
+		spanGeneratePassword := opentracing.GlobalTracer().StartSpan("generatePassword", opentracing.ChildOf(parentSpan.Context()))
 		m.Password = utils.GeneratePassword(b.Password)
+		spanGeneratePassword.Finish()
 	}
 
 	m.CreatedIp = b.Ip
 	// 创建账号
-	if err := tx.Save(&m); err.RowsAffected == 0 {
+	spanCreateAccount := opentracing.GlobalTracer().StartSpan("createAccount", opentracing.ChildOf(parentSpan.Context()))
+	err := tx.Save(&m)
+	spanCreateAccount.Finish()
+
+	if err.RowsAffected == 0 {
 		tx.Rollback()
+		spanSqlBegin.Finish()
 		return nil, status.Errorf(codes.Internal, "创建账号失败")
 	}
 
+	spanCreateAccountLog := opentracing.GlobalTracer().StartSpan("createAccountLog", opentracing.ChildOf(parentSpan.Context()))
 	b.Id = m.ID
 	b.accountLog(tx, enum.AccountTypeSignin)
+	spanCreateAccountLog.Finish()
 
 	// 创建默认用户信息
+	spanCreateAccountUser := opentracing.GlobalTracer().StartSpan("createAccountUser", opentracing.ChildOf(parentSpan.Context()))
 	ub := UserBusiness{AccountId: m.ID}
-	if _, err := ub.Create(tx); err != nil {
+	_, cErr := ub.Create(tx)
+	spanCreateAccountUser.Finish()
+
+	if cErr != nil {
 		tx.Rollback()
-		return nil, err
+		spanSqlBegin.Finish()
+		return nil, cErr
 	}
 
 	tx.Commit()
+	spanSqlBegin.Finish()
 	return &m, nil
 }
 

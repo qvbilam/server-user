@@ -2,10 +2,14 @@ package main
 
 import (
 	"fmt"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"net"
 	"os"
+	"os/signal"
+	"syscall"
 	"user/api"
 	proto "user/api/qvbilam/user/v1"
 	"user/global"
@@ -20,9 +24,12 @@ func main() {
 	initialize.InitDatabase()
 	initialize.InitRedis()
 	initialize.InitElasticSearch()
+	// 初始化 jaeger 链路追踪； 设置全局tracer (监听到 <-quit 后关闭
+	tracer, jaegerCloser := initialize.InitJaeger()
+	opentracing.SetGlobalTracer(tracer)
 
-	// 注册服务
-	server := grpc.NewServer()
+	// 注册服务(并且带入tracer
+	server := grpc.NewServer(grpc.UnaryInterceptor(otgrpc.OpenTracingServerInterceptor(tracer)))
 	proto.RegisterUserServer(server, &api.UserService{})
 	proto.RegisterAccountServer(server, &api.AccountService{})
 
@@ -43,5 +50,9 @@ func main() {
 
 	// 监听结束
 	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
+
+	// 关闭 jaeger 链路追踪
+	_ = jaegerCloser.Close()
 }

@@ -23,6 +23,10 @@ func initEnvConfig() {
 	redisPort, _ := strconv.Atoi(os.Getenv("REDIS_PORT"))
 	redisDb, _ := strconv.Atoi(os.Getenv("REDIS_DATABASE"))
 	jwtExpire, _ := strconv.Atoi(os.Getenv("JWT_EXPIRE"))
+	jaegerOutput := os.Getenv("JAEGER_OUTPUT")
+	jaegerIsLog := os.Getenv("JAEGER_IS_LOG")
+	jaegerOutputInt, _ := strconv.Atoi(jaegerOutput)
+	jaegerOutputIsLog, _ := strconv.ParseBool(jaegerIsLog)
 
 	if global.ServerConfig == nil {
 		global.ServerConfig = &config.ServerConfig{}
@@ -48,6 +52,11 @@ func initEnvConfig() {
 	global.ServerConfig.RedisConfig.Port = redisPort
 	global.ServerConfig.RedisConfig.Password = os.Getenv("REDIS_PASSWORD")
 	global.ServerConfig.RedisConfig.Database = redisDb
+
+	global.ServerConfig.JaegerConfig.Host = os.Getenv("JAEGER_HOST")
+	global.ServerConfig.JaegerConfig.Port = os.Getenv("JAEGER_PORT")
+	global.ServerConfig.JaegerConfig.Output = int64(jaegerOutputInt)
+	global.ServerConfig.JaegerConfig.IsLog = jaegerOutputIsLog
 }
 
 func initViperConfig() {

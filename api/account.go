@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -18,6 +19,7 @@ type AccountService struct {
 // Create 创建账号
 func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccountRequest) (*proto.AccountResponse, error) {
 	b := business.AccountBusiness{
+		Ctx:      ctx,
 		Mobile:   request.Mobile,
 		Email:    request.Email,
 		Password: request.Password,
@@ -28,8 +30,14 @@ func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccoun
 			Device:  request.Device.Device,
 		},
 	}
+	// 获取span
+	parentSpan := opentracing.SpanFromContext(ctx)
+	BusSpan := opentracing.GlobalTracer().StartSpan("accountBusinessStart", opentracing.ChildOf(parentSpan.Context()))
+
 	// 创建账号
 	entity, err := b.Create()
+
+	BusSpan.Finish()
 	if err != nil {
 		return nil, err
 	}

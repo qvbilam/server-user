@@ -22,4 +22,7 @@ go get -u github.com/anaskhan96/go-password-encoder
 
 # 配置
 go get -u github.com/spf13/viper
+# jaeger 链路追踪
+go get github.com/uber/jaeger-client-go
+go get -u github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc
 ```

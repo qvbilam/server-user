@@ -10,6 +10,7 @@ type ServerConfig struct {
 	JWTConfig         JWTConfig         `mapstructure:"jwt" json:"jwt"`
 	OauthQQConfig     OauthQQConfig     `mapstructure:"oauth_qq_config" json:"oauth_qq_config"`
 	OauthGithubConfig OauthGithubConfig `mapstructure:"oauth_github_config" json:"oauth_github_config"`
+	JaegerConfig      JaegerConfig      `mapstructure:"jaeger" json:"jaeger"`
 }
 
 type DBConfig struct {
@@ -49,4 +50,11 @@ type OauthGithubConfig struct {
 	AppId     string `mapstructure:"app_id" json:"app_id"`
 	AppSecret string `mapstructure:"app_secret" json:"app_secret"`
 	Uri       string `mapstructure:"uri" json:"uri"`
+}
+
+type JaegerConfig struct {
+	Host   string `mapstructure:"host" json:"host"`
+	Port   string `mapstructure:"port" json:"port"`
+	Output int64  `mapstructure:"output" json:"output"`
+	IsLog  bool   `mapstructure:"is_log" json:"is_log"`
 }
