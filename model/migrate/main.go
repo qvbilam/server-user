@@ -23,6 +23,7 @@ func main() {
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true, //不带表名
 		},
+		DisableForeignKeyConstraintWhenMigrating: true, // 禁用外键关联
 	})
 	if err != nil {
 		panic(any(err))

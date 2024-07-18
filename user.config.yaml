@@ -1,0 +1,9 @@
+apiVersion: "v1"
+kind: ConfigMap
+metadata:
+  name: user
+  labels:
+    app: user
+data:
+  # 服务配置
+  server_name: "user-server"

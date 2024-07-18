@@ -1,7 +1,8 @@
 #!/bin/bash
 # shellcheck disable=SC2086
 
-tag=$1
+echo -e "\033[0;32mPlease input server version\033[0m"
+read tag
 imageName=qvbilam/api-server-user-alpine
 originImageName=registry.cn-hangzhou.aliyuncs.com/qvbilam/api-server-user
 

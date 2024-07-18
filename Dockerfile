@@ -6,11 +6,11 @@ WORKDIR /go/src/user
 # 设置执行命令
 RUN go env -w GO111MODULE=on \
     && go env -w GOPROXY=https://goproxy.cn,direct \
-    && go install ./...
+    && go build -o app
 
 # 重制作镜像-通过dockerhub可查看golang1.18-alpine对应的alpine版本
 FROM alpine:3.15
-COPY --from=go-alpine-builder /go/bin/user /bin/user
+COPY --from=go-alpine-builder /go/src/user/app /bin/user
 ENV PORT=9501
 
 # 暴露端口

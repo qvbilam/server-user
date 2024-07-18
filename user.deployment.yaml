@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: user-server
-          image: registry.cn-hangzhou.aliyuncs.com/qvbilam/user-server:1.0.0
+          image: registry.cn-hangzhou.aliyuncs.com/qvbilam/api-server-user:1.0.0
           # 不存在拉取
           # imagePullPolicy: IfNotPresent
           imagePullPolicy: Always
@@ -37,80 +37,97 @@ spec:
             # jwt 配置
             - name: JWT_KEY
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: jwt_key
                   name: user
             - name: JWT_EXPIRE
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: jwt_expire
                   name: user
             - name: JWT_ISSUER
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: jwt_issuer
                   name: user
 
             # 数据库配置
             - name: DB_HOST
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: db_host
                   name: user
             - name: DB_PORT
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: db_port
                   name: user
             - name: DB_USER
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: db_user
                   name: user
             - name: DB_PASSWORD
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: db_password
                   name: user
             - name: DB_DATABASE
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: db_database
                   name: user
 
             # es 配置
             - name: ES_HOST
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: es_host
                   name: user
             - name: ES_PORT
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: es_port
                   name: user
 
             # 缓存配置
             - name: REDIS_HOST
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: redis_host
                   name: user
             - name: REDIS_PORT
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: redis_port
                   name: user
             - name: REDIS_PASSWORD
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: redis_password
                   name: user
             - name: REDIS_DATABASE
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: redis_database
                   name: user
+
+            # user-server
+            - name: USER_SERVER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: user_server_name
+                  name: public
+            - name: USER_SERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: user_server_host
+                  name: public
+            - name: USER_SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: user_server_port
+                  name: public
           resources:
             limits:
               cpu: 100m
