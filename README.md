@@ -3,7 +3,7 @@
 ## 1. 初始数据
 修改数据库配置, 执行文件`model.migrate.main.go`
 ```shell
-$ cp config.yaml.tmp config.yaml`
+$ cp config.yaml.tmp config.yaml
 ```
 
 ## 2. 创建私钥
