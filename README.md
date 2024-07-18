@@ -28,7 +28,7 @@ Please input server version
 1. 修改`deployment.yaml`中的`image镜像地址`和`imagePullSecrets.name`第一步设置私有仓库的密钥名称
 2. 修改隐私配置`secret.yaml`
 ```shell
-$ cp [app].secret.yaml.tmp [app].secret.yaml`
+$ cp [app].secret.yaml.tmp [app].secret.yaml
 ```
 
 ## 5. 申请服务
