@@ -29,12 +29,16 @@ func main() {
 		panic(any(err))
 	}
 
-	_ = db.AutoMigrate(
-		&model.User{},
-		&model.Level{},
-		&model.LevelExpLog{},
-		&model.AccountPlatform{},
-		&model.Account{},
-		&model.AccountLog{},
-	)
+	var u model.User
+	db.First(&u)
+	fmt.Println(host)
+	fmt.Println(u)
+	//_ = db.AutoMigrate(
+	//	&model.User{},
+	//	&model.Level{},
+	//	&model.LevelExpLog{},
+	//	&model.AccountPlatform{},
+	//	&model.Account{},
+	//	&model.AccountLog{},
+	//)
 }

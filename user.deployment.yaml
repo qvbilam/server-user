@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: user-server
-          image: registry.cn-hangzhou.aliyuncs.com/qvbilam/api-server-user:1.0.0
+          image: registry.cn-hangzhou.aliyuncs.com/qvbilam/api-server-user:1.0
           # 不存在拉取
           # imagePullPolicy: IfNotPresent
           imagePullPolicy: Always
@@ -112,22 +112,6 @@ spec:
                   key: redis_database
                   name: user
 
-            # user-server
-            - name: USER_SERVER_NAME
-              valueFrom:
-                configMapKeyRef:
-                  key: user_server_name
-                  name: public
-            - name: USER_SERVER_HOST
-              valueFrom:
-                configMapKeyRef:
-                  key: user_server_host
-                  name: public
-            - name: USER_SERVER_PORT
-              valueFrom:
-                configMapKeyRef:
-                  key: user_server_port
-                  name: public
           resources:
             limits:
               cpu: 100m
