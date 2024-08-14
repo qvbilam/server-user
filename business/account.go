@@ -41,14 +41,14 @@ type AccountBusiness struct {
 func (b *AccountBusiness) Create() (*model.Account, error) {
 	parentSpan := opentracing.SpanFromContext(b.Ctx)
 	spanCheckMobile := opentracing.GlobalTracer().StartSpan("checkMobileExists", opentracing.ChildOf(parentSpan.Context()))
-	spanSqlBegin := opentracing.GlobalTracer().StartSpan("sqlBegin", opentracing.ChildOf(parentSpan.Context()))
+	spanSqlBegin := opentracing.GlobalTracer().StartSpan("startSqlBegin", opentracing.ChildOf(parentSpan.Context()))
 
 	tx := global.DB.Begin()
 	m := model.Account{Mobile: b.Mobile}
 	// 验证手机号
 
 	existsMobile := b.ExistsMobile(tx)
-	spanCheckMobile.Finish()
+	spanCheckMobile.Finish() // 验证手机号基数
 
 	if existsMobile {
 		tx.Rollback()
@@ -61,10 +61,10 @@ func (b *AccountBusiness) Create() (*model.Account, error) {
 		spanCheckEmail := opentracing.GlobalTracer().StartSpan("checkEmailExists", opentracing.ChildOf(parentSpan.Context()))
 		m.Email = b.Email
 		existsEmail := b.ExistsEmail(tx)
-		spanCheckEmail.Finish()
+		spanCheckEmail.Finish() // 验证邮箱结束
 		if existsEmail {
 			tx.Rollback()
-			spanSqlBegin.Finish()
+			spanSqlBegin.Finish() // sql结束
 			return nil, status.Errorf(codes.AlreadyExists, "邮箱已存在")
 		}
 	}
@@ -73,14 +73,14 @@ func (b *AccountBusiness) Create() (*model.Account, error) {
 	if b.Password != "" {
 		spanGeneratePassword := opentracing.GlobalTracer().StartSpan("generatePassword", opentracing.ChildOf(parentSpan.Context()))
 		m.Password = utils.GeneratePassword(b.Password)
-		spanGeneratePassword.Finish()
+		spanGeneratePassword.Finish() // 生成密码结束
 	}
 
 	m.CreatedIp = b.Ip
 	// 创建账号
 	spanCreateAccount := opentracing.GlobalTracer().StartSpan("createAccount", opentracing.ChildOf(parentSpan.Context()))
 	err := tx.Save(&m)
-	spanCreateAccount.Finish()
+	spanCreateAccount.Finish() // 创建账号结束
 
 	if err.RowsAffected == 0 {
 		tx.Rollback()

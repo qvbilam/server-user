@@ -32,7 +32,7 @@ func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccoun
 	}
 	// 获取span
 	parentSpan := opentracing.SpanFromContext(ctx)
-	BusSpan := opentracing.GlobalTracer().StartSpan("accountBusinessStart", opentracing.ChildOf(parentSpan.Context()))
+	BusSpan := opentracing.GlobalTracer().StartSpan("startAccountBusiness", opentracing.ChildOf(parentSpan.Context()))
 
 	// 创建账号
 	entity, err := b.Create()
