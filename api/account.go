@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,10 +18,6 @@ type AccountService struct {
 
 // Create 创建账号
 func (s *AccountService) Create(ctx context.Context, request *proto.UpdateAccountRequest) (*proto.AccountResponse, error) {
-	_, exists := ctx.Value("ginContext").(string)
-	fmt.Printf("获取 ctx 信息[ginContext]: %v\n", exists)
-	_, exists = ctx.Value("test").(string)
-	fmt.Printf("获取 ctx 信息[test]: %v\n", exists)
 
 	b := business.AccountBusiness{
 		Ctx:      ctx,
