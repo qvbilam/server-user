@@ -53,6 +53,7 @@ func initEnvConfig() {
 	global.ServerConfig.RedisConfig.Password = os.Getenv("REDIS_PASSWORD")
 	global.ServerConfig.RedisConfig.Database = redisDb
 
+	global.ServerConfig.JaegerConfig.Server = os.Getenv("JAEGER_SERVER")
 	global.ServerConfig.JaegerConfig.Host = os.Getenv("JAEGER_HOST")
 	global.ServerConfig.JaegerConfig.Port = os.Getenv("JAEGER_PORT")
 	global.ServerConfig.JaegerConfig.Output = int64(jaegerOutputInt)

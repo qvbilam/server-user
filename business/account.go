@@ -3,6 +3,7 @@ package business
 import (
 	"context"
 	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -95,8 +96,12 @@ func (b *AccountBusiness) Create() (*model.Account, error) {
 
 	// 创建默认用户信息
 	spanCreateAccountUser := opentracing.GlobalTracer().StartSpan("createAccountUser", opentracing.ChildOf(parentSpan.Context()))
+	spanCreateAccountUser.LogFields(log.Int64("accountId", m.ID))
 	ub := UserBusiness{AccountId: m.ID}
-	_, cErr := ub.Create(tx)
+	user, cErr := ub.Create(tx)
+	spanCreateAccountUser.LogFields(
+		log.Int64("user.id", user.ID),
+		log.Int64("user.code", user.Code))
 	spanCreateAccountUser.Finish()
 
 	if cErr != nil {

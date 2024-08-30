@@ -53,6 +53,7 @@ type OauthGithubConfig struct {
 }
 
 type JaegerConfig struct {
+	Server string `mapstructure:"server" json:"server"`
 	Host   string `mapstructure:"host" json:"host"`
 	Port   string `mapstructure:"port" json:"port"`
 	Output int64  `mapstructure:"output" json:"output"`
