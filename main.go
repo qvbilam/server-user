@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/opentracing/opentracing-go"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -29,7 +28,8 @@ func main() {
 	opentracing.SetGlobalTracer(tracer)
 
 	// 注册服务(并且带入tracer
-	server := grpc.NewServer(grpc.UnaryInterceptor(otgrpc.OpenTracingServerInterceptor(tracer)))
+	//server := grpc.NewServer(grpc.UnaryInterceptor(otgrpc.OpenTracingServerInterceptor(tracer)))
+	server := grpc.NewServer(grpc.UnaryInterceptor(utils.ServerInterceptor(tracer)))
 	proto.RegisterUserServer(server, &api.UserService{})
 	proto.RegisterAccountServer(server, &api.AccountService{})
 
